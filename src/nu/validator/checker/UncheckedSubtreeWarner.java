@@ -62,22 +62,22 @@ public class UncheckedSubtreeWarner extends Checker {
             Attributes atts) throws SAXException {
         if (!alreadyWarnedAboutRdf
                 && "http://www.w3.org/1999/02/22-rdf-syntax-ns#" == uri) {
-            warn("This validator does not validate RDF. RDF subtrees go unchecked.");
+            warn(Messages.getString("UncheckedSubtreeWarner.1")); //$NON-NLS-1$
             alreadyWarnedAboutRdf = true;
         }
         if (!alreadyWarnedAboutOpenMath
                 && "http://www.openmath.org/OpenMath" == uri) {
-            warn("This validator does not validate OpenMath. OpenMath subtrees go unchecked.");
+            warn(Messages.getString("UncheckedSubtreeWarner.3")); //$NON-NLS-1$
             alreadyWarnedAboutOpenMath = true;
         }
         if (!alreadyWarnedAboutInkscape
                 && (("http://www.w3.org/2000/svg" == uri && attrsContainInkscape(atts))
                         || "http://www.inkscape.org/namespaces/inkscape" == uri || "http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" == uri)) {
-            warn("This validator does not validate Inkscape extensions properly. Inkscape-specific errors may go unnoticed.");
+            warn(Messages.getString("UncheckedSubtreeWarner.7")); //$NON-NLS-1$
             alreadyWarnedAboutInkscape = true;
         }
         if (!alreadyWarnedAboutSvgVersion && "http://www.w3.org/2000/svg" == uri && hasUnsupportedVersion(atts)) {
-            warn("Unsupported SVG version specified. This validator only supports SVG 1.1. The recommended way to suppress this warning is to remove the \u201Cversion\u201D attribute altogether.");
+            warn(Messages.getString("UncheckedSubtreeWarner.0")); //$NON-NLS-1$
             alreadyWarnedAboutSvgVersion = true;
         }
     }

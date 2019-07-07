@@ -78,11 +78,7 @@ public class UsemapChecker extends Checker {
     public void endDocument() throws SAXException {
         for (Map.Entry<String, Locator> entry : usemapLocationsByName.entrySet()) {
             if (!mapNames.contains(entry.getKey())) {
-                err("The hash-name reference in attribute \u201Cusemap\u201D"
-                    + " referred to \u201C"
-                        + entry.getKey()
-                        + "\u201D, but there is no \u201Cmap\u201D element"
-                        + " with a \u201Cname\u201D attribute with that value.",
+                err(String.format(Messages.getString("UsemapChecker.9"), entry.getKey()), //$NON-NLS-1$
                         entry.getValue());
             }
         }

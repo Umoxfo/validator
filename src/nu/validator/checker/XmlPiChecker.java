@@ -209,34 +209,25 @@ public class XmlPiChecker extends Checker implements LexicalHandler {
         if (getErrorHandler() != null) {
             Html5DatatypeException ex5 = (Html5DatatypeException) e;
             DatatypeMismatchException bpe = new DatatypeMismatchException(
-                    "Bad value \u201c" + attrValue + "\u201d for \u201c"
-                            + piTarget + "\u201d pseudo-attribute \u201c"
-                            + attrName + "\u201d. " + e.getMessage(),
+                    String.format(Messages.getString("XmlPiChecker.6"), //$NON-NLS-1$
+                            attrValue, piTarget, attrName, e.getMessage()),
                     getDocumentLocator(), datatypeClass, ex5.isWarning());
             getErrorHandler().error(bpe);
         }
     }
 
     private void errAttributeWithNoValue() throws SAXException {
-        err("Found \u201c" + piTarget + "\u201d pseudo-attribute \u201c"
-                + attributeName
-                + "\u201d without a value. All pseudo-attributes in \u201c"
-                + piTarget + "\u201d instructions must have values.");
+        err(String.format(Messages.getString("XmlPiChecker.10"), piTarget, //$NON-NLS-1$
+                attributeName));
     }
 
     private void errAttributeValueContainsLt() throws SAXException {
-        err("Found \u201c" + piTarget + "\u201d pseudo-attribute \u201c"
-                + attributeName
-                + "\u201d with the character \u201c<\u201d in its value."
-                + " All pseudo-attribute values in \u201c" + piTarget
-                + "\u201d instructions must not contain the character"
-                + " \u201c<\u201d.");
+        err(String.format(Messages.getString("XmlPiChecker.14"), piTarget, //$NON-NLS-1$
+                attributeName));
     }
 
     private void errUpperCaseXinHexNcr() throws SAXException {
-        err("In XML documents, a hexadecimal character reference must begin"
-                + " with \u201c&#x\u201d (lowercase \u201cx\u201d), not"
-                + " \u201c&#X\u201d (uppercase \u201cX\u201d).");
+        err(Messages.getString("XmlPiChecker.20")); //$NON-NLS-1$
     }
 
     private void checkXmlStylesheetPiData(String data) throws SAXException {
@@ -249,14 +240,10 @@ public class XmlPiChecker extends Checker implements LexicalHandler {
         boolean alternateIsYes = false;
         boolean badDatatype = false;
         if (inDoctype) {
-            warn("An \u201cxml-stylesheet\u201d instruction should not be used"
-                    + " within a \u201cDOCTYPE\u201d declaration.");
+            warn(Messages.getString("XmlPiChecker.23")); //$NON-NLS-1$
         }
         if (alreadyHasElement) {
-            err("Any \u201cxml-stylesheet\u201d instruction in a document must"
-                    + " occur before any elements in the document."
-                    + " Suppressing any further errors for this"
-                    + " \u201cxml-stylesheet\u201d instruction.");
+            err(Messages.getString("XmlPiChecker.25")); //$NON-NLS-1$
             return;
         }
         if (!"".equals(data)) {
@@ -310,28 +297,14 @@ public class XmlPiChecker extends Checker implements LexicalHandler {
                                     || attrValue.matches("text/xsl(;.*)?")
                                     || attrValue.matches("text/xslt(;.*)?")) {
                                 if (!attrValue.matches("text/xsl(;.*)?")) {
-                                    warn("For indicating XSLT,"
-                                            + " \u201ctext/xsl\u201d is the only"
-                                            + " MIME type for the"
-                                            + " \u201cxml-stylesheet\u201d"
-                                            + " pseudo-attribute \u201ctype\u201d"
-                                            + " that is supported across browsers.");
+                                    warn(Messages.getString("XmlPiChecker.40")); //$NON-NLS-1$
                                 }
                                 if (hasXsltPi) {
-                                    warn("Browsers do not support multiple"
-                                            + " \u201cxml-stylesheet\u201d"
-                                            + " instructions with a"
-                                            + " \u201ctype\u201d value that"
-                                            + " indicates XSLT.");
+                                    warn(Messages.getString("XmlPiChecker.46")); //$NON-NLS-1$
                                 }
                                 hasXsltPi = true;
                             } else if (!attrValue.matches("^text/css(;.*)?$")) {
-                                warn("\u201ctext/css\u201d and"
-                                        + " \u201ctext/xsl\u201d are the only"
-                                        + " MIME types for the"
-                                        + " \u201cxml-stylesheet\u201d"
-                                        + " pseudo-attribute \u201ctype\u201d"
-                                        + " that are supported across browsers.");
+                                warn(Messages.getString("XmlPiChecker.52")); //$NON-NLS-1$
                             }
                         }
                         break;
@@ -385,41 +358,26 @@ public class XmlPiChecker extends Checker implements LexicalHandler {
                         if ("yes".equals(attrValue)) {
                             alternateIsYes = true;
                         } else if (!"no".equals(attrValue)) {
-                            err("The value of the \u201cxml-stylesheet\u201d"
-                                    + " pseudo-attribute \u201calternate\u201d"
-                                    + " must be either \u201cyes\u201d or"
-                                    + " \u201cno\u201d.");
+                            err(Messages.getString("XmlPiChecker.66")); //$NON-NLS-1$
                         }
                         break;
                     default:
-                        err("Pseudo-attribute \u201c" + attrName
-                                + "\u201d not allowed in"
-                                + " \u201cxml-stylesheet\u201d instruction.");
+                        err(String.format(Messages.getString("XmlPiChecker.69"), //$NON-NLS-1$
+                                attrName));
                         break;
                 }
             }
             if (alternateIsYes && !hasNonEmptyTitle) {
-                err("An \u201cxml-stylesheet\u201d instruction with an"
-                        + " \u201calternate\u201d pseudo-attribute whose value is"
-                        + " \u201cyes\u201d must also have a \u201ctitle\u201d"
-                        + " pseudo-attribute with a non-empty value.");
+                err(Messages.getString("XmlPiChecker.72")); //$NON-NLS-1$
             }
         }
         if (!hasHref) {
-            err("\u201cxml-stylesheet\u201d instruction lacks \u201chref\u201d"
-                    + " pseudo-attribute."
-                    + " The \u201chref\u201d pseudo-attribute is required in all"
-                    + " \u201cxml-stylesheet\u201d instructions.");
+            err(Messages.getString("XmlPiChecker.76")); //$NON-NLS-1$
         }
         if (hasXsltPi && (hasTitle || hasMedia || hasCharset || hasAlternate)) {
-            warn("When processing \u201cxml-stylesheet\u201d instructions,"
-                    + " browsers ignore the pseudo-attributes \u201ctitle\u201d,"
-                    + " \u201cmedia\u201d, \u201ccharset\u201d, and"
-                    + " \u201calternate\u201d.");
+            warn(Messages.getString("XmlPiChecker.80")); //$NON-NLS-1$
         } else if (hasCharset) {
-            warn("Some browsers ignore the value of the"
-                    + " \u201cxml-stylesheet\u201d pseudo-attribute"
-                    + " \u201ccharset\u201d.");
+            warn(Messages.getString("XmlPiChecker.84")); //$NON-NLS-1$
         }
     }
 
@@ -1546,7 +1504,8 @@ public class XmlPiChecker extends Checker implements LexicalHandler {
             case 4:
                 return "U+" + hexString;
             default:
-                throw new RuntimeException("Unreachable.");
+                throw new RuntimeException(
+                        Messages.getString("XmlPiChecker.97")); //$NON-NLS-1$
         }
     }
 
@@ -1568,9 +1527,7 @@ public class XmlPiChecker extends Checker implements LexicalHandler {
 
     private void warnAboutPrivateUseChar() throws SAXException {
         if (!alreadyWarnedAboutPrivateUseCharacters) {
-            warn("Document uses the Unicode Private Use Area(s), which should"
-                    + " not be used in publicly exchanged documents."
-                    + " (Charmod C073)");
+            warn(Messages.getString("XmlPiChecker.98")); //$NON-NLS-1$
             alreadyWarnedAboutPrivateUseCharacters = true;
         }
     }
@@ -1582,34 +1539,30 @@ public class XmlPiChecker extends Checker implements LexicalHandler {
         } else if (c != '\uFFFD') {
             errQuoteBeforeAttributeName(c);
         } else {
-            err("The character \u201C" + c + "\u201D is not allowed in \u201C"
-                    + piTarget + "\u201D pseudo-attribute names.");
+            err(String.format(Messages.getString("XmlPiChecker.101"), c, //$NON-NLS-1$
+                    piTarget));
         }
     }
 
     private void errCharRefLacksSemicolon() throws SAXException {
-        err("Character reference was not terminated by a semicolon.");
+        err(Messages.getString("XmlPiChecker.104")); //$NON-NLS-1$
     }
 
     private void errDuplicateAttribute() throws SAXException {
-        err("Duplicate \u201C" + piTarget + "\u201D pseudo-attribute \u201C"
-                + attributeName + "\u201D.");
+        err(String.format(Messages.getString("XmlPiChecker.105"), piTarget, //$NON-NLS-1$
+                attributeName));
     }
 
     private void errEqualsSignBeforeAttributeName() throws SAXException {
-        err("Saw \u201C=\u201D when expecting \u201C" + piTarget
-                + "\u201D pseudo-attribute name. Probable cause:"
-                + " Pseudo-attribute name missing.");
+        err(String.format(Messages.getString("XmlPiChecker.108"), piTarget)); //$NON-NLS-1$
     }
 
     private void errLtOrEqualsOrGraveInUnquotedAttributeOrNull(char c)
             throws SAXException {
         switch (c) {
             case '=':
-                err("\u201C=\u201D at the start of an unquoted \u201C"
-                        + piTarget
-                        + "\u201D pseudo-attribute value. Probable cause:"
-                        + " Stray duplicate equals sign.");
+                err(String.format(Messages.getString("XmlPiChecker.111"), //$NON-NLS-1$
+                        piTarget));
                 return;
             case '<':
                 /*
@@ -1621,38 +1574,29 @@ public class XmlPiChecker extends Checker implements LexicalHandler {
                 // before.");
                 return;
             case '`':
-                err("\u201C`\u201D at the start of an unquoted \u201C"
-                        + piTarget
-                        + "\u201D pseudo-attribute value. Probable cause:"
-                        + " Using the wrong character as a quote.");
+                err(String.format(Messages.getString("XmlPiChecker.114"), //$NON-NLS-1$
+                        piTarget));
                 return;
         }
     }
 
     private void errNoSpaceBetweenAttributes() throws SAXException {
-        err("Space is required between \u201C" + piTarget
-                + "\u201D pseudo-attributes.");
+        err(String.format(Messages.getString("XmlPiChecker.117"), piTarget)); //$NON-NLS-1$
     }
 
     private void errQuoteBeforeAttributeName(char c) throws SAXException {
-        err("Saw \u201C" + c
-                + "\u201D when expecting a pseudo-attribute name. Probable cause:"
-                + " \u201C=\u201D missing immediately before.");
+        err(String.format(Messages.getString("XmlPiChecker.119"), c)); //$NON-NLS-1$
     }
 
     private void errQuoteOrLtInAttributeNameOrNull(char c) throws SAXException {
         if (c != '\uFFFD') {
-            err("Quote \u201C" + c
-                    + "\u201D in pseudo-attribute name. Probable cause:"
-                    + " Matching quote missing somewhere earlier.");
+            err(String.format(Messages.getString("XmlPiChecker.122"), c)); //$NON-NLS-1$
         }
     }
 
     private void errUnquotedAttributeValOrNull() throws SAXException {
-        err("Found unquoted value for \u201c" + piTarget
-                + "\u201d pseudo-attribute \u201c" + attributeName
-                + "\u201d. The value of all pseudo-attributes in \u201c"
-                + piTarget + "\u201d instructions must be quoted.");
+        err(String.format(Messages.getString("XmlPiChecker.125"), piTarget, //$NON-NLS-1$
+                attributeName));
     }
 
     private void errNoNamedCharacterMatch() throws SAXException {
@@ -1660,9 +1604,7 @@ public class XmlPiChecker extends Checker implements LexicalHandler {
             return;
         }
         SAXParseException spe = new SAXParseException(
-                "\u201C&\u201D did not start a character reference."
-                        + " (\u201C&\u201D probably should have been escaped as"
-                        + " \u201C&amp;\u201D.)",
+                Messages.getString("XmlPiChecker.129"), //$NON-NLS-1$
                 getDocumentLocator());
         getErrorHandler().error(spe);
     }
@@ -1672,37 +1614,36 @@ public class XmlPiChecker extends Checker implements LexicalHandler {
          * warn instead of error because these control characters are legal in
          * XML
          */
-        warn("Character reference expands to a control character ("
-                + toUPlusString((char) value) + ").");
+        warn(String.format(Messages.getString("XmlPiChecker.132"), //$NON-NLS-1$
+                toUPlusString((char) value)));
     }
 
     private void errNcrIllegalValueForXml() throws SAXException {
-        err("Character reference expands to a character that is not legal"
-                + " in XML (" + toUPlusString((char) value) + ").");
+        err(String.format(Messages.getString("XmlPiChecker.134"), //$NON-NLS-1$
+                toUPlusString((char) value)));
     }
 
     private void errNcrSurrogate() throws SAXException {
-        err("Character reference expands to a surrogate.");
+        err(Messages.getString("XmlPiChecker.137")); //$NON-NLS-1$
     }
 
     private void errNcrUnassigned() throws SAXException {
-        err("Character reference expands to a permanently unassigned"
-                + " code point.");
+        err(Messages.getString("XmlPiChecker.138")); //$NON-NLS-1$
     }
 
     private char errNcrNonCharacter(char ch) throws SAXException {
-        err("Character reference expands to a non-character ("
-                + toUPlusString((char) value) + ").");
+        err(String.format(Messages.getString("XmlPiChecker.140"), //$NON-NLS-1$
+                toUPlusString((char) value)));
         return ch;
     }
 
     private void errNcrOutOfRange() throws SAXException {
-        err("Character reference outside the permissible Unicode range.");
+        err(Messages.getString("XmlPiChecker.142")); //$NON-NLS-1$
     }
 
     private void errNoDigitsInNCR() throws SAXException {
-        err("No digits after \u201C" + new String(strBuf, 0, strBufLen)
-                + "\u201D.");
+        err(String.format(Messages.getString("XmlPiChecker.143"), //$NON-NLS-1$
+                new String(strBuf, 0, strBufLen)));
     }
 
     private void errUnescapedAmpersandInterpretedAsCharacterReference()
@@ -1711,9 +1652,7 @@ public class XmlPiChecker extends Checker implements LexicalHandler {
             return;
         }
         SAXParseException spe = new SAXParseException(
-                "The string following \u201C&\u201D was interpreted as"
-                        + " a character reference. (\u201C&\u201D probably"
-                        + " should have been escaped as \u201C&amp;\u201D.)",
+                Messages.getString("XmlPiChecker.145"), //$NON-NLS-1$
                 getDocumentLocator());
         getErrorHandler().error(spe);
     }
@@ -1731,8 +1670,8 @@ public class XmlPiChecker extends Checker implements LexicalHandler {
     }
 
     private void errAstralNonCharacter(int ch) throws SAXException {
-        err("Character reference expands to an astral non-character ("
-                + toUPlusString((char) value) + ").");
+        err(String.format(Messages.getString("XmlPiChecker.148"), //$NON-NLS-1$
+                toUPlusString((char) value)));
     }
 
     private static String newAsciiLowerCaseStringFromString(String str) {

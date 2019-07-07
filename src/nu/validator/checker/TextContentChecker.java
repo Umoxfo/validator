@@ -127,14 +127,13 @@ public final class TextContentChecker extends Checker {
             throws SAXException {
         if (inEmptyTitleOrOption && XHTML_URL.equals(uri)
                 && "title".equals(localName)) {
-            err("Element \u201Ctitle\u201d must not be empty.");
+            err(Messages.getString("TextContentChecker.8")); //$NON-NLS-1$
             inEmptyTitleOrOption = false;
         } else if (inEmptyTitleOrOption && XHTML_URL.equals(uri)
                 && "option".equals(localName)
                 && !(parent != null && XHTML_URL.equals(parent[0])
                         && "datalist".equals(parent[1]))) {
-            err("Element \u201Coption\u201d without "
-                    + "attribute \u201clabel\u201d must not be empty.");
+            err(Messages.getString("TextContentChecker.11")); //$NON-NLS-1$
             inEmptyTitleOrOption = false;
         }
         openElements.pop();
@@ -145,9 +144,7 @@ public final class TextContentChecker extends Checker {
             } catch (DatatypeException e) {
                 String msg = e.getMessage();
                 if (msg == null) {
-                    err("The text content of element \u201C" + localName
-                            + "\u201D from namespace \u201C" + uri
-                            + "\u201D was not in the required format.");
+                    err(String.format(Messages.getString("TextContentChecker.13"), localName, uri)); //$NON-NLS-1$
                 } else {
                     if ("time".equals(localName)) {
                         try {
@@ -163,10 +160,7 @@ public final class TextContentChecker extends Checker {
                         } catch (ClassNotFoundException ce) {
                         }
                     } else {
-                        err("The text content of element \u201C" + localName
-                                // + "\u201D from namespace \u201C" + uri
-                                + "\u201D was not in the required format: "
-                                + msg.split(": ")[1]);
+                        err(String.format(Messages.getString("TextContentChecker.18"), localName, msg.split(": ")[1])); //$NON-NLS-1$
                     }
                 }
             }
@@ -178,14 +172,12 @@ public final class TextContentChecker extends Checker {
             throws SAXException, ClassNotFoundException {
         if (getErrorHandler() != null) {
             Html5DatatypeException ex5 = (Html5DatatypeException) e;
-            String message = "The text content of element \u201c" + localName
-                    + "\u201d was not in the required format: ";
+            String message = String.format(Messages.getString("TextContentChecker.21"), localName); //$NON-NLS-1$
             if (ex5.isWarning()) {
-                message = "Double-check the text content of element \u201c"
-                        + localName + "\u201d: ";
+                message = String.format(Messages.getString("TextContentChecker.23"), localName); //$NON-NLS-1$
             }
             DatatypeMismatchException dme = new DatatypeMismatchException(
-                    message + e.getMessage().split(": ")[1],
+                    message + e.getMessage().split(": ")[1], //$NON-NLS-1$
                     getDocumentLocator(), datatypeClass, ex5.isWarning());
             getErrorHandler().error(dme);
         }

@@ -55,28 +55,19 @@ public class UnsupportedFeatureChecker extends Checker {
     }
 
     private void warnAboutInputType(String name) throws SAXException {
-        warn("The \u201C" + name + "\u201D input type is not supported in"
-                + " all browsers. Please be sure to test, and consider"
-                + " using a polyfill.");
+        warn(String.format(Messages.getString("UnsupportedFeatureChecker.33"), name)); //$NON-NLS-1$
     }
 
     private void warnAboutAttribute(String name) throws SAXException {
-        warn("The \u201C" + name + "\u201D attribute is not supported in"
-                + " all browsers. Please be sure to test, and consider"
-                + " using a polyfill.");
+        warn(String.format(Messages.getString("UnsupportedFeatureChecker.37"), name)); //$NON-NLS-1$
     }
 
     private void warnAboutElement(String name) throws SAXException {
-        warn("The \u201C" + name + "\u201D element is not supported in"
-                + " all browsers. Please be sure to test, and consider"
-                + " using a polyfill.");
+        warn(String.format(Messages.getString("UnsupportedFeatureChecker.41"), name)); //$NON-NLS-1$
     }
 
     private void warnAboutAttributeOnElement(String attributeName, String elementName) throws SAXException {
-      warn("The \u201C" + attributeName + "\u201D attribute on the"
-          + " \u201C" + elementName + "\u201D element is not supported"
-          + " in all browsers. Please be sure to test, and consider"
-          + " using a polyfill.");
+      warn(String.format(Messages.getString("UnsupportedFeatureChecker.45"), attributeName, elementName)); //$NON-NLS-1$
     }
 
 }

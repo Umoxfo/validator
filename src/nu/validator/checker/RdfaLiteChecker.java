@@ -27,14 +27,11 @@ import org.xml.sax.SAXException;
 
 public class RdfaLiteChecker extends Checker {
 
-    private static final String GUIDANCE = " Consider checking against the HTML5 + RDFa 1.1 schema instead.";
+    private static final String GUIDANCE = Messages.getString("RdfaLiteChecker.GUIDANCE"); //$NON-NLS-1$
 
     private void warnNonRDFaLite(String localName, String att)
             throws SAXException {
-        warn("RDFa Core attribute \u201C" + att
-                + "\u201D is not allowed on the \u201C" + localName
-                + "\u201D element in HTML5 + RDFa 1.1 Lite documents."
-                + GUIDANCE);
+        warn(String.format(Messages.getString("RdfaLiteChecker.1"), att, localName) + GUIDANCE); //$NON-NLS-1$
     }
 
     /**
@@ -54,9 +51,7 @@ public class RdfaLiteChecker extends Checker {
             String att = atts.getLocalName(i);
             if ("datatype" == att || "about" == att || "inlist" == att
                     || "rev" == att) {
-                warn("RDFa Core attribute \u201C" + att
-                        + "\u201D is not allowed in HTML5 + RDFa 1.1 Lite documents."
-                        + GUIDANCE);
+                warn(String.format(Messages.getString("RdfaLiteChecker.9"), att) + GUIDANCE); //$NON-NLS-1$
             } else if ("content" == att && "meta" != localName) {
                 warnNonRDFaLite(localName, att);
             } else if (("rel" == att) && "a" != localName && "area" != localName

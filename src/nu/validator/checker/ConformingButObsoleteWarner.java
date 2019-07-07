@@ -37,9 +37,7 @@ public class ConformingButObsoleteWarner extends Checker {
         if ("http://www.w3.org/1999/xhtml" == uri) {
             if ("img" == localName) {
                 if (atts.getIndex("", "border") > -1) {
-                    warn("The \u201Cborder\u201D attribute is obsolete."
-                        + " Consider specifying \u201Cimg { border: 0; }\u201D"
-                        + " in CSS instead.");
+                    warn(Messages.getString("ConformingButObsoleteWarner.0")); //$NON-NLS-1$
                 }
             } else if ("script" == localName) {
                 if (AttributeUtil.lowerCaseLiteralEqualsIgnoreAsciiCaseString(
@@ -48,21 +46,16 @@ public class ConformingButObsoleteWarner extends Checker {
                     if (type == null
                             || AttributeUtil.lowerCaseLiteralEqualsIgnoreAsciiCaseString(
                                     "text/javascript", type)) {
-                        warn("The \u201Clanguage\u201D attribute on the"
-                            + " \u201Cscript\u201D element is obsolete."
-                            + " You can safely omit it.");
+                        warn(Messages.getString("ConformingButObsoleteWarner.1")); //$NON-NLS-1$
                     }
                 }
             } else if ("a" == localName) {
                 if (atts.getIndex("", "name") > -1) {
-                    warn("The \u201Cname\u201D attribute is obsolete."
-                        + " Consider putting an \u201Cid\u201D attribute"
-                        + " on the nearest container instead.");
+                    warn(Messages.getString("ConformingButObsoleteWarner.2")); //$NON-NLS-1$
                 }
             } else if ("html" == localName) {
                 if (atts.getIndex("", "manifest") > -1) {
-                    warn("The manifest-based application cache feature is"
-                        + " obsolete. Consider using service workers instead.");
+                    warn(Messages.getString("ConformingButObsoleteWarner.3")); //$NON-NLS-1$
                 }
             }
         }

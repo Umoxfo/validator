@@ -253,21 +253,13 @@ public class LanguageDetectingChecker extends Checker {
         String lowerCaseLang = htmlElementLangAttrValue.toLowerCase();
         String langWarning = "";
         if (!htmlElementHasLang) {
-            langWarning = "This document appears to be written in either"
-                    + " Croatian, Serbian, or Bosnian. Consider adding either"
-                    + " \u201Clang=\"hr\"\u201D, \u201Clang=\"sr\"\u201D, or"
-                    + " \u201Clang=\"bs\"\u201D to the"
-                    + " \u201Chtml\u201D start tag.";
+            langWarning = String.format(
+                    Messages.getString("LanguageDetectingChecker.Warn.NoLangAttr.SerboCroatian")); //$NON-NLS-1$
         } else if (!("hr".equals(declaredLangCode)
                 || "sr".equals(declaredLangCode)
                 || "bs".equals(declaredLangCode))) {
             langWarning = String.format(
-                    "This document appears to be written in either Croatian,"
-                            + " Serbian, or Bosnian, but the \u201Chtml\u201D"
-                            + " start tag has %s. Consider using either"
-                            + " \u201Clang=\"hr\"\u201D,"
-                            + " \u201Clang=\"sr\"\u201D, or"
-                            + " \u201Clang=\"bs\"\u201D instead.",
+                    Messages.getString("LanguageDetectingChecker.Warn.MisuseLangAttrValue.SerboCroatian"), //$NON-NLS-1$
                     getAttValueExpr("lang", lowerCaseLang));
         }
         if (!"".equals(langWarning)) {
@@ -279,18 +271,13 @@ public class LanguageDetectingChecker extends Checker {
         String lowerCaseLang = htmlElementLangAttrValue.toLowerCase();
         String langWarning = "";
         if (!htmlElementHasLang) {
-            langWarning = "This document appears to be written in Norwegian"
-                    + " Consider adding either"
-                    + " \u201Clang=\"nn\"\u201D or \u201Clang=\"nb\"\u201D"
-                    + " (or variant) to the \u201Chtml\u201D start tag.";
+            langWarning = Messages.getString(
+                    "LanguageDetectingChecker.Warn.NoLangAttr.Norwegian"); //$NON-NLS-1$
         } else if (!("no".equals(declaredLangCode)
                 || "nn".equals(declaredLangCode)
                 || "nb".equals(declaredLangCode))) {
             langWarning = String.format(
-                    "This document appears to be written in Norwegian, but the"
-                            + " \u201Chtml\u201D start tag has %s. Consider"
-                            + " using either \u201Clang=\"nn\"\u201D or"
-                            + " \u201Clang=\"nb\"\u201D (or variant) instead.",
+                    Messages.getString("LanguageDetectingChecker.Warn.MisuseLangAttrValue.Norwegian"), //$NON-NLS-1$
                     getAttValueExpr("lang", lowerCaseLang));
         }
         if (!"".equals(langWarning)) {
@@ -310,12 +297,9 @@ public class LanguageDetectingChecker extends Checker {
                 lowerCaseContentLang).getLanguage();
         if (!("no".equals(contentLangCode) || "nn".equals(contentLangCode)
                 || "nb".equals(contentLangCode))) {
-            warn("This document appears to be written in"
-                    + " Norwegian but the value of the HTTP"
-                    + " \u201CContent-Language\u201D header is" + " \u201C"
-                    + lowerCaseContentLang + "\u201D. Consider"
-                    + " changing it to \u201Cnn\u201D or \u201Cnn\u201D"
-                    + " (or variant) instead.");
+            warn(String.format(
+                    Messages.getString("LanguageDetectingChecker.Warn.HTTPContentLanguage.Norwegian"), //$NON-NLS-1$
+                    lowerCaseContentLang));
         }
     }
 
@@ -326,10 +310,7 @@ public class LanguageDetectingChecker extends Checker {
         String lowerCaseLang = htmlElementLangAttrValue.toLowerCase();
         if (!htmlElementHasLang) {
             langWarning = String.format(
-                    "This document appears to be written in %s."
-                            + " Consider adding \u201Clang=\"%s\"\u201D"
-                            + " (or variant) to the \u201Chtml\u201D"
-                            + " start tag.",
+                    Messages.getString("LanguageDetectingChecker.Warn.NoLangAttr"), //$NON-NLS-1$
                     detectedLanguageName, preferredLanguageCode);
         } else {
             if (request != null) {
@@ -421,16 +402,15 @@ public class LanguageDetectingChecker extends Checker {
                     && "bg".equals(declaredLangCode)) {
                 return;
             }
-            String message = "This document appears to be written in %s"
-                    + " but the \u201Chtml\u201D start tag has %s. Consider"
-                    + " using \u201Clang=\"%s\"\u201D (or variant) instead.";
             if (zhSubtagMismatch(detectedLanguage, lowerCaseLang)
                     || !declaredLangCode.equals(detectedLanguageCode)) {
                 if (request != null) {
                     request.setAttribute(
                             "http://validator.nu/properties/lang-wrong", true);
                 }
-                langWarning = String.format(message, detectedLanguageName,
+                langWarning = String.format(
+                        Messages.getString("LanguageDetectingChecker.Warn.MisuseLangAttrValue"), //$NON-NLS-1$
+                        detectedLanguageName,
                         getAttValueExpr("lang", htmlElementLangAttrValue),
                         preferredLanguageCode);
             }
@@ -447,7 +427,6 @@ public class LanguageDetectingChecker extends Checker {
                 || httpContentLangHeader.contains(",")) {
             return;
         }
-        String message = "";
         String lowerCaseContentLang = httpContentLangHeader.toLowerCase();
         String contentLangCode = new ULocale(
                 lowerCaseContentLang).getLanguage();
@@ -521,23 +500,19 @@ public class LanguageDetectingChecker extends Checker {
         }
         if (zhSubtagMismatch(detectedLanguage, lowerCaseContentLang)
                 || !contentLangCode.equals(detectedLanguageCode)) {
-            message = "This document appears to be written in %s but the value"
-                    + " of the HTTP \u201CContent-Language\u201D header is"
-                    + " \u201C%s\u201D. Consider changing it to"
-                    + " \u201C%s\u201D (or variant).";
-            warn(String.format(message, detectedLanguageName,
-                    lowerCaseContentLang, preferredLanguageCode,
+            warn(String.format(
+                    Messages.getString("LanguageDetectingChecker.Warn.HTTPContentLanguage"), //$NON-NLS-1$
+                    detectedLanguageName, lowerCaseContentLang,
                     preferredLanguageCode));
         }
         if (htmlElementHasLang) {
-            message = "The value of the HTTP \u201CContent-Language\u201D"
-                    + " header is \u201C%s\u201D but it will be ignored because"
-                    + " the \u201Chtml\u201D start tag has %s.";
             String lowerCaseLang = htmlElementLangAttrValue.toLowerCase();
             if (htmlElementHasLang) {
                 if (zhSubtagMismatch(lowerCaseContentLang, lowerCaseLang)
                         || !contentLangCode.equals(declaredLangCode)) {
-                    warn(String.format(message, httpContentLangHeader,
+                    warn(String.format(
+                            Messages.getString("LanguageDetectingChecker.Warn.IgnoreHTTPContentLanguage"), //$NON-NLS-1$
+                            httpContentLangHeader,
                             getAttValueExpr("lang", htmlElementLangAttrValue)),
                             htmlStartTagLocator);
                 }
@@ -554,16 +529,12 @@ public class LanguageDetectingChecker extends Checker {
         String dirWarning = "";
         if (!hasDir) {
             dirWarning = String.format(
-                    "This document appears to be written in %s."
-                            + " Consider adding \u201Cdir=\"rtl\"\u201D"
-                            + " to the \u201Chtml\u201D start tag.",
-                    detectedLanguageName, preferredLanguageCode);
+                    Messages.getString("LanguageDetectingChecker.Warn.AddDirAttr"), //$NON-NLS-1$
+                    detectedLanguageName);
         } else if (!"rtl".equals(dirAttrValue)) {
-            String message = "This document appears to be written in %s"
-                    + " but the \u201Chtml\u201D start tag has %s."
-                    + " Consider using \u201Cdir=\"rtl\"\u201D instead.";
-            dirWarning = String.format(message, detectedLanguageName,
-                    getAttValueExpr("dir", dirAttrValue));
+            dirWarning = String.format(
+                    Messages.getString("LanguageDetectingChecker.Warn.WrongDirAttrValue"), //$NON-NLS-1$
+                    detectedLanguageName, getAttValueExpr("dir", dirAttrValue));
         }
         if (!"".equals(dirWarning)) {
             warn(dirWarning, htmlStartTagLocator);
@@ -582,7 +553,7 @@ public class LanguageDetectingChecker extends Checker {
 
     private String getAttValueExpr(String attName, String attValue) {
         if ("".equals(attValue)) {
-            return String.format("an empty \u201c%s\u201d attribute", attName);
+            return String.format(Messages.getString("LanguageDetectingChecker.GetAttValueExpr.Empty"), attName); //$NON-NLS-1$
         } else {
             return String.format("\u201C%s=\"%s\"\u201D", attName, attValue);
         }
@@ -614,11 +585,7 @@ public class LanguageDetectingChecker extends Checker {
 
     private void warnIfMissingLang() throws SAXException {
         if (!htmlElementHasLang) {
-            String message = "Consider adding a \u201Clang\u201D"
-                    + " attribute to the \u201Chtml\u201D"
-                    + " start tag to declare the language"
-                    + " of this document.";
-            warn(message, htmlStartTagLocator);
+            warn(Messages.getString("LanguageDetectingChecker.Suggest.AddLangAttr"), htmlStartTagLocator); //$NON-NLS-1$
         }
     }
 
@@ -688,37 +655,33 @@ public class LanguageDetectingChecker extends Checker {
                 return;
             }
             if ("zh-hans".equals(detectedLanguage)) {
-                detectedLanguageName = "Simplified Chinese";
+                detectedLanguageName = Messages.getString("LanguageDetectingChecker.LanguageName.SimplifiedChinese"); //$NON-NLS-1$
                 preferredLanguageCode = "zh-hans";
             } else if ("zh-hant".equals(detectedLanguage)) {
-                detectedLanguageName = "Traditional Chinese";
+                detectedLanguageName = Messages.getString("LanguageDetectingChecker.LanguageName.TraditionalChinese"); //$NON-NLS-1$
                 preferredLanguageCode = "zh-hant";
             } else if ("mhr".equals(detectedLanguage)) {
-                detectedLanguageName = "Meadow Mari";
+                detectedLanguageName = Messages.getString("LanguageDetectingChecker.LanguageName.MeadowMari"); //$NON-NLS-1$
                 preferredLanguageCode = "mhr";
             } else if ("mrj".equals(detectedLanguage)) {
-                detectedLanguageName = "Hill Mari";
+                detectedLanguageName = Messages.getString("LanguageDetectingChecker.LanguageName.HillMari"); //$NON-NLS-1$
                 preferredLanguageCode = "mrj";
             } else if ("nah".equals(detectedLanguage)) {
-                detectedLanguageName = "Nahuatl";
+                detectedLanguageName = Messages.getString("LanguageDetectingChecker.LanguageName.Nahuatl"); //$NON-NLS-1$
                 preferredLanguageCode = "nah";
             } else if ("pnb".equals(detectedLanguage)) {
-                detectedLanguageName = "Western Panjabi";
+                detectedLanguageName = Messages.getString("LanguageDetectingChecker.LanguageName.WesternPanjabi"); //$NON-NLS-1$
                 preferredLanguageCode = "pnb";
-            } else if ("sr-cyrl".equals(detectedLanguage)) {
-                detectedLanguageName = "Serbian";
+            } else if ("sr-cyrl".equals(detectedLanguage)
+                    || "sr-latn".equals(detectedLanguage)) {
+                detectedLanguageName = Messages.getString("LanguageDetectingChecker.LanguageName.Serbian"); //$NON-NLS-1$
                 preferredLanguageCode = "sr";
-            } else if ("sr-latn".equals(detectedLanguage)) {
-                detectedLanguageName = "Serbian";
-                preferredLanguageCode = "sr";
-            } else if ("uz-cyrl".equals(detectedLanguage)) {
-                detectedLanguageName = "Uzbek";
-                preferredLanguageCode = "uz";
-            } else if ("uz-latn".equals(detectedLanguage)) {
-                detectedLanguageName = "Uzbek";
+            } else if ("uz-cyrl".equals(detectedLanguage)
+                    || "uz-latn".equals(detectedLanguage)) {
+                detectedLanguageName = Messages.getString("LanguageDetectingChecker.LanguageName.Uzbek"); //$NON-NLS-1$
                 preferredLanguageCode = "uz";
             } else if ("zxx".equals(detectedLanguage)) {
-                detectedLanguageName = "Lorem ipsum text";
+                detectedLanguageName = Messages.getString("LanguageDetectingChecker.LanguageName.LoremIpsumText"); //$NON-NLS-1$
                 preferredLanguageCode = "zxx";
             } else {
                 detectedLanguageName = locale.getDisplayName();
