@@ -45,7 +45,7 @@ final class HorizontalCellComparator implements Comparator<Cell> {
         } else if (cell0.getLeft() > cell1.getLeft()) {
             return 1;
         } else {
-            throw new IllegalStateException("Two cells in effect cannot start on the same column, so this should never happen!");
+            throw new IllegalStateException(Messages.getString("HorizontalCellComparator.Compare.IllegalStateException")); //$NON-NLS-1$
         }
     }
 

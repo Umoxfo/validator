@@ -247,7 +247,7 @@ final class Table {
                 state = State.IN_TABLE_AT_POTENTIAL_ROW_GROUP_START;
                 break;
             default:
-                throw new IllegalStateException("Bug!");
+                throw new IllegalStateException(Messages.getString("CommonMessage.Bug")); //$NON-NLS-1$
         }
     }
 
@@ -288,7 +288,7 @@ final class Table {
                 state = State.IN_IMPLICIT_ROW_GROUP;
                 break;
             default:
-                throw new IllegalStateException("Bug!");
+                throw new IllegalStateException(Messages.getString("CommonMessage.Bug")); //$NON-NLS-1$
         }
         current.endRow();
     }
@@ -345,7 +345,7 @@ final class Table {
                 state = State.IN_ROW_IN_IMPLICIT_ROW_GROUP;
                 break;
             default:
-                throw new IllegalStateException("Bug!");
+                throw new IllegalStateException(Messages.getString("CommonMessage.Bug")); //$NON-NLS-1$
         }
     }
 
@@ -387,7 +387,7 @@ final class Table {
                 state = State.IN_TABLE_COLS_SEEN;
                 break;
             default:
-                throw new IllegalStateException("Bug!");
+                throw new IllegalStateException(Messages.getString("CommonMessage.Bug")); //$NON-NLS-1$
         }
     }
 
@@ -405,9 +405,7 @@ final class Table {
                 break;
             case IN_COLGROUP:
                 if (pendingColGroupSpan > 0) {
-                    warn("A col element causes a span attribute with value "
-                            + pendingColGroupSpan
-                            + " to be ignored on the parent colgroup.");
+                    warn(String.format(Messages.getString("Table.Warn.StartCol.InColgroup"), pendingColGroupSpan)); //$NON-NLS-1$
                 }
                 pendingColGroupSpan = 0;
                 state = State.IN_COL_IN_COLGROUP;
@@ -460,7 +458,7 @@ final class Table {
                 state = State.IN_COLGROUP;
                 break;
             default:
-                throw new IllegalStateException("Bug!");
+                throw new IllegalStateException(Messages.getString("CommonMessage.Bug")); //$NON-NLS-1$
         }
     }
 
@@ -475,18 +473,14 @@ final class Table {
             case IN_TABLE_COLS_SEEN:
                 break;
             default:
-                throw new IllegalStateException("Bug!");
+                throw new IllegalStateException(Messages.getString("CommonMessage.Bug")); //$NON-NLS-1$
         }
 
         // Check referential integrity
         for (Cell cell : cellsReferringToHeaders) {
             for (String heading : cell.getHeadings()) {
                 if (!headerIds.contains(heading)) {
-                    cell.err("The \u201Cheaders\u201D attribute on the element \u201C"
-                            + cell.elementName()
-                            + "\u201D refers to the ID \u201C"
-                            + heading
-                            + "\u201D, but there is no \u201Cth\u201D element with that ID in the same table.");
+                    cell.err(String.format(Messages.getString("Table.Error.End"), cell.elementName(), heading)); //$NON-NLS-1$
                 }
             }
         }
@@ -495,19 +489,13 @@ final class Table {
         ColumnRange colRange = first;
         while (colRange != null) {
             if (colRange.isSingleCol()) {
-                owner.getErrorHandler().error(
-                        new SAXParseException("Table column " + colRange
-                                + " established by element \u201C"
-                                + colRange.getElement()
-                                + "\u201D has no cells beginning in it.",
-                                colRange.getLocator()));
+                owner.getErrorHandler().error(new SAXParseException(
+                        String.format(Messages.getString("Table.Error.End.SingleCol"), colRange.toString(), colRange.getElement()), //$NON-NLS-1$
+                        colRange.getLocator()));
             } else {
-                owner.getErrorHandler().error(
-                        new SAXParseException("Table columns in range "
-                                + colRange + " established by element \u201C"
-                                + colRange.getElement()
-                                + "\u201D have no cells beginning in them.",
-                                colRange.getLocator()));
+                owner.getErrorHandler().error(new SAXParseException(
+                        String.format(Messages.getString("Table.Error.End.MultiCol"), colRange.toString(), colRange.getElement()), //$NON-NLS-1$
+                        colRange.getLocator()));
             }
             colRange = colRange.getNext();
         }

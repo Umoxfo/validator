@@ -55,21 +55,11 @@ final class VerticalCellComparator implements Comparator<Cell> {
             } else if (cell0.getLeft() > cell1.getLeft()) {
                 return 1;
             } else {
-                throw new IllegalStateException(
-                        "Two cells in effect cannot start on the same column, so this should never happen!!\n"
-                                + "cell0 from line "
-                                + cell0.getLineNumber()
-                                + ", bottom="
-                                + cell0.getBottom()
-                                + ", left="
-                                + cell0.getLeft()
-                                + "\n"
-                                + "cell1 from line "
-                                + cell1.getLineNumber()
-                                + ", bottom="
-                                + cell1.getBottom()
-                                + ", left="
-                                + cell1.getLeft());
+                throw new IllegalStateException(String.format(
+                        Messages.getString("VerticalCellComparator.Compare.IllegalStateException"), //$NON-NLS-1$
+                        cell0.getLineNumber(), cell0.getBottom(),
+                        cell0.getLeft(), cell1.getLineNumber(),
+                        cell1.getBottom(), cell1.getLeft()));
             }
         }
     }

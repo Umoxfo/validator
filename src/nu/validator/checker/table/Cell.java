@@ -111,13 +111,11 @@ final class Cell implements Locator {
             this.systemId = locator.getSystemId();
         }
         if (rowspan > MAX_ROWSPAN) {
-            err("The value of the \u201Crowspan\u201D attribute must be less"
-                    + " than or equal to " + MAX_ROWSPAN + ".");
+            err(String.format(Messages.getString("Cell.GreaterThan"), "rowspan", MAX_ROWSPAN)); //$NON-NLS-1$
             rowspan = MAX_ROWSPAN;
         }
         if (colspan > MAX_COLSPAN) {
-            err("The value of the \u201Ccolspan\u201D attribute must be less"
-                    + " than or equal to " + MAX_COLSPAN + ".");
+            err(String.format(Messages.getString("Cell.GreaterThan"), "colspan", MAX_COLSPAN)); //$NON-NLS-1$
             colspan = MAX_COLSPAN;
         }
         this.left = 0;
@@ -166,8 +164,8 @@ final class Cell implements Locator {
      */
     public void errOnHorizontalOverlap(Cell laterCell) throws SAXException {
         if (!((laterCell.right <= left) || (right <= laterCell.left))) {
-            this.err("Table cell is overlapped by later table cell.");
-            laterCell.err("Table cell overlaps an earlier table cell.");
+            this.err(Messages.getString("Cell.CurrentCell.Overlap")); //$NON-NLS-1$
+            laterCell.err(Messages.getString("Cell.LaterCell.Overlap")); //$NON-NLS-1$
         }
     }
 
@@ -176,13 +174,13 @@ final class Cell implements Locator {
         this.right += left;
         if (this.right < 1) {
             throw new SAXException(
-                    "Implementation limit reached. Table column counter overflowed.");
+                    Messages.getString("Cell.SetPosition.Column.SAXException")); //$NON-NLS-1$
         }
         if (this.bottom != MAX_ROWSPAN) {
             this.bottom += top;
             if (this.bottom < 1) {
                 throw new SAXException(
-                        "Implementation limit reached. Table row counter overflowed.");
+                        Messages.getString("Cell.SetPosition.Row.SAXException")); //$NON-NLS-1$
             }
         }
     }
@@ -220,11 +218,11 @@ final class Cell implements Locator {
 
     public void errIfNotRowspanZero(String rowGroupType) throws SAXException {
         if (this.bottom != MAX_ROWSPAN) {
-            err("Table cell spans past the end of its "
-                    + (rowGroupType == null ? "implicit row group"
-                            : "row group established by a \u201C" + rowGroupType
-                                    + "\u201D element")
-                    + "; clipped to the end of the row group.");
+            err(rowGroupType == null
+                    ? Messages.getString("Cell.IfNotRowspanZero") //$NON-NLS-1$
+                    : String.format(
+                            Messages.getString("Cell.IfNotRowspanZero.RowGroupType"), //$NON-NLS-1$
+                            rowGroupType));
         }
     }
 

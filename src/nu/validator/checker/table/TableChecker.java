@@ -79,7 +79,7 @@ public final class TableChecker extends Checker {
      */
     private void pop() throws SAXException {
         if (current == null) {
-            throw new IllegalStateException("Bug!");
+            throw new IllegalStateException(Messages.getString("CommonMessage.Bug")); //$NON-NLS-1$
         }
         current.end();
         if (stack.isEmpty()) {
@@ -123,8 +123,7 @@ public final class TableChecker extends Checker {
         int span = AttributeUtil.parseNonNegativeInteger(
                 atts.getValue("", "span"));
         if (span > MAX_COLSPAN) {
-            err("The value of the \u201Cspan\u201D attribute must be less than"
-                    + " or equal to " + MAX_COLSPAN + ".");
+            err(String.format(Messages.getString("TableChecker.Error.ClampSpan.GreaterThan"), MAX_COLSPAN)); //$NON-NLS-1$
             span = MAX_COLSPAN;
         }
         return span;

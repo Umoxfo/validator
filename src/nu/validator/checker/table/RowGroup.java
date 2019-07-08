@@ -131,13 +131,12 @@ final class RowGroup {
 
     public void endRow() throws SAXException {
         if (!rowHadCells) {
-            owner.err("Row "
-                    + (currentRow + 1)
-                    + " of "
-                    + (type == null ? "an implicit row group"
-                            : "a row group established by a \u201C" + type
-                                    + "\u201D element")
-                    + " has no cells beginning on it.");
+            owner.err((type == null
+                    ? String.format(Messages.getString("RowGroup.Error.EndRow"), //$NON-NLS-1$
+                            (currentRow + 1))
+                    : String.format(
+                            Messages.getString("RowGroup.Error.EndRow.Type"), //$NON-NLS-1$
+                            (currentRow + 1), type)));
         }
 
         findInsertionPoint();
@@ -146,30 +145,26 @@ final class RowGroup {
         int columnCount = owner.getColumnCount();
         if (owner.isHardWidth()) {
             if (insertionPoint > columnCount) {
-                owner.err("A table row was "
-                        + insertionPoint
-                        + " columns wide and exceeded the column count established using column markup ("
-                        + columnCount + ").");
+                owner.err(String.format(
+                        Messages.getString("RowGroup.Error.EndRow.ExceededColumCount"), //$NON-NLS-1$
+                        insertionPoint, columnCount));
             } else if (insertionPoint < columnCount) {
-                owner.err("A table row was "
-                        + insertionPoint
-                        + " columns wide, which is less than the column count established using column markup ("
-                        + columnCount + ").");
+                owner.err(String.format(
+                        Messages.getString("RowGroup.Error.EndRow.LessThenColumCount"), //$NON-NLS-1$
+                        insertionPoint, columnCount));
             }
         } else if (columnCount == -1) {
             // just saw the first row
             owner.setColumnCount(insertionPoint);
         } else {
             if (insertionPoint > columnCount) {
-                owner.warn("A table row was "
-                        + insertionPoint
-                        + " columns wide and exceeded the column count established by the first row ("
-                        + columnCount + ").");
+                owner.warn(String.format(
+                        Messages.getString("RowGroup.Warn.EndRow.FirstRow.ExceededColumCount"),
+                        insertionPoint, columnCount)); //$NON-NLS-1$
             } else if (insertionPoint < columnCount) {
-                owner.warn("A table row was "
-                        + insertionPoint
-                        + " columns wide, which is less than the column count established by the first row ("
-                        + columnCount + ").");
+                owner.warn(String.format(
+                        Messages.getString("RowGroup.Warn.EndRow.FirstRow.LessThenColumCount"),
+                        insertionPoint, columnCount)); //$NON-NLS-1$
             }
         }
 
