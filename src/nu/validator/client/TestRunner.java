@@ -124,8 +124,8 @@ public class TestRunner extends MessageEmitterAdapter {
     private void checkHtmlFile(File file) throws IOException, SAXException {
         if (!file.exists()) {
             if (verbose) {
-                out.println(String.format("\"%s\": warning: File not found.",
-                        this.getFileURL(file)));
+                out.printf(Messages.getString("TestRunner.Warn.FileNotFound"), //$NON-NLS-1$
+                        this.getFileURL(file));
                 out.flush();
             }
             return;
@@ -140,11 +140,8 @@ public class TestRunner extends MessageEmitterAdapter {
             validator.checkXmlFile(file);
         } else {
             if (verbose) {
-                out.println(String.format(
-                        "\"%s\": warning: File was not checked."
-                                + " Files must have a .html, .xhtml, .htm,"
-                                + " or .xht extension.",
-                        this.getFileURL(file)));
+                out.printf(Messages.getString("TestRunner.Warn.FileNotChecked"), //$NON-NLS-1$
+                        this.getFileURL(file));
                 out.flush();
             }
         }
@@ -182,9 +179,8 @@ public class TestRunner extends MessageEmitterAdapter {
             for (String substring : ignoreList) {
                 if (testPathname.contains(substring)) {
                     if (verbose) {
-                        out.println(String.format(
-                                "\"%s\": warning: File ignored.",
-                                this.getFileURL(file)));
+                        out.printf(Messages.getString("TestRunner.Warn.FileIgnored"), //$NON-NLS-1$
+                                this.getFileURL(file));
                         out.flush();
                     }
                     return true;
@@ -258,10 +254,8 @@ public class TestRunner extends MessageEmitterAdapter {
                 } else if (expectedMessages != null
                         && expectedMessages.get(testFilename) == null) {
                     try {
-                        err.println(String.format(
-                                "\"%s\": warning: No expected message in"
-                                        + " messages file.",
-                                this.getFileURL(file)));
+                        err.printf(Messages.getString("TestRunner.Warning.NoExpectedMessage"), //$NON-NLS-1$
+                                this.getFileURL(file));
                         err.flush();
                     } catch (MalformedURLException e) {
                         throw new RuntimeException(e);
@@ -270,12 +264,11 @@ public class TestRunner extends MessageEmitterAdapter {
                         && !messageMatches(testFilename)) {
                     failed = true;
                     try {
-                        err.println(String.format(
-                                "\"%s\": error: Expected \"%s\""
-                                        + " but instead encountered \"%s\".",
+                        err.printf(
+                                Messages.getString("TestRunner.Error.NotExpected"), //$NON-NLS-1$
                                 this.getFileURL(file),
                                 expectedMessages.get(testFilename),
-                                exception.getMessage()));
+                                exception.getMessage());
                         err.flush();
                     } catch (MalformedURLException e) {
                         throw new RuntimeException(e);
@@ -285,10 +278,8 @@ public class TestRunner extends MessageEmitterAdapter {
             if (!inError) {
                 failed = true;
                 try {
-                    err.println(String.format(
-                            "\"%s\": error: Expected an error but did not"
-                                    + " encounter any.",
-                            this.getFileURL(file)));
+                    err.printf(Messages.getString("TestRunner.Error.NotError"), //$NON-NLS-1$
+                            this.getFileURL(file));
                     err.flush();
                 } catch (MalformedURLException e) {
                     throw new RuntimeException(e);
@@ -320,10 +311,8 @@ public class TestRunner extends MessageEmitterAdapter {
                 } else if (expectedMessages != null
                         && expectedMessages.get(testFilename) == null) {
                     try {
-                        err.println(String.format(
-                                "\"%s\": warning: No expected message in"
-                                        + " messages file.",
-                                this.getFileURL(file)));
+                        err.printf(Messages.getString("TestRunner.Warn.NoExpectedMessage"), //$NON-NLS-1$
+                                this.getFileURL(file));
                         err.flush();
                     } catch (MalformedURLException e) {
                         throw new RuntimeException(e);
@@ -331,12 +320,11 @@ public class TestRunner extends MessageEmitterAdapter {
                 } else if (expectedMessages != null
                         && !messageMatches(testFilename)) {
                     try {
-                        err.println(String.format(
-                                "\"%s\": error: Expected \"%s\""
-                                        + " but instead encountered \"%s\".",
+                        err.printf(
+                                Messages.getString("TestRunner.Error.NotExpected"), //$NON-NLS-1$
                                 this.getFileURL(file),
                                 expectedMessages.get(testFilename),
-                                exception.getMessage()));
+                                exception.getMessage());
                         err.flush();
                     } catch (MalformedURLException e) {
                         throw new RuntimeException(e);
@@ -346,20 +334,16 @@ public class TestRunner extends MessageEmitterAdapter {
             if (inError) {
                 failed = true;
                 try {
-                    err.println(String.format(
-                            "\"%s\": error: Expected a warning but encountered"
-                                    + " an error first.",
-                            this.getFileURL(file)));
+                    err.printf(Messages.getString("TestRunner.Error.ExpWarn.ErrorFirst"), //$NON-NLS-1$
+                            this.getFileURL(file));
                     err.flush();
                 } catch (MalformedURLException e) {
                     throw new RuntimeException(e);
                 }
             } else if (!exceptionIsWarning) {
                 try {
-                    err.println(String.format(
-                            "\"%s\": error: Expected a warning but did not"
-                                    + " encounter any.",
-                            this.getFileURL(file)));
+                    err.printf(Messages.getString("TestRunner.Error.ExpWarn.NoEncounter"), //$NON-NLS-1$
+                            this.getFileURL(file));
                     err.flush();
                 } catch (MalformedURLException e) {
                     throw new RuntimeException(e);
@@ -368,10 +352,8 @@ public class TestRunner extends MessageEmitterAdapter {
             if (inError) {
                 failed = true;
                 try {
-                    err.println(String.format(
-                            "\"%s\": error: Expected a warning only but"
-                                    + " encountered at least one error.",
-                            this.getFileURL(file)));
+                    err.printf(Messages.getString("TestRunner.Error.ExpWarnOnly.LeastOneError"), //$NON-NLS-1$
+                            this.getFileURL(file));
                     err.flush();
                 } catch (MalformedURLException e) {
                     throw new RuntimeException(e);
@@ -399,9 +381,8 @@ public class TestRunner extends MessageEmitterAdapter {
         if (files == null) {
             if (verbose) {
                 try {
-                    out.println(String.format(
-                            "\"%s\": warning: No files found in directory.",
-                            this.getFileURL(directory)));
+                    out.printf(Messages.getString("TestRunner.Warn.NoFileFoundInDir"), //$NON-NLS-1$
+                            this.getFileURL(directory));
                     out.flush();
                 } catch (MalformedURLException mue) {
                     throw new RuntimeException(mue);
@@ -479,10 +460,10 @@ public class TestRunner extends MessageEmitterAdapter {
         }
         if (verbose) {
             if (failed) {
-                out.println("Failure!");
+                out.println(Messages.getString("TestRunner.Failure")); //$NON-NLS-1$
                 out.flush();
             } else {
-                out.println("Success!");
+                out.println(Messages.getString("TestRunner.Success")); //$NON-NLS-1$
                 out.flush();
             }
         }
@@ -580,16 +561,14 @@ public class TestRunner extends MessageEmitterAdapter {
             } else if (arg.startsWith("--ignore=")) {
                 ignoreList = arg.substring(9, arg.length()).split(",");
             } else if (arg.startsWith("--")) {
-                System.out.println(String.format(
-                        "\nError: There is no option \"%s\".", arg));
+                System.out.printf(Messages.getString("TestRunner.Errror.NoOption"), arg); //$NON-NLS-1$
                 usage();
                 System.exit(1);
             } else {
                 if (arg.endsWith(".json")) {
                     messagesFilename = arg;
                 } else {
-                    System.out.println("\nError: Expected the name of a messages"
-                            + " file with a .json extension.");
+                    System.out.println(Messages.getString("TestRunner.Error.OutputFormatJson")); //$NON-NLS-1$
                     usage();
                     System.exit(1);
                 }
@@ -598,17 +577,16 @@ public class TestRunner extends MessageEmitterAdapter {
         if (messagesFilename != null) {
             messagesFile = new File(messagesFilename);
             if (!messagesFile.exists()) {
-                System.out.println("\nError: \"" + messagesFilename
-                        + "\" file not found.");
+                System.out.printf(Messages.getString("TestRunner.Error.FileNotFound"), //$NON-NLS-1$
+                        messagesFilename);
                 System.exit(1);
             } else if (!messagesFile.isFile()) {
-                System.out.println("\nError: \"" + messagesFilename
-                        + "\" is not a file.");
+                System.out.printf(Messages.getString("TestRunner.Error.NotFile"), //$NON-NLS-1$
+                        messagesFilename);
                 System.exit(1);
             }
         } else if (writeMessages) {
-            System.out.println("\nError: Expected the name of a messages"
-                    + " file with a .json extension.");
+            System.out.println(Messages.getString("TestRunner.Error.OutputFormatJson")); //$NON-NLS-1$
             usage();
             System.exit(1);
         }
@@ -621,12 +599,6 @@ public class TestRunner extends MessageEmitterAdapter {
     }
 
     private static void usage() {
-        System.out.println("\nUsage:");
-        System.out.println("\n    java nu.validator.client.TestRunner [--errors-only] [--write-messages]");
-        System.out.println("          [--verbose] [MESSAGES.json]");
-        System.out.println("\n...where the MESSAGES.json file contains name/value pairs in which the name is");
-        System.out.println("a pathname of a document to check and the value is the first error message or");
-        System.out.println("warning message the validator is expected to report when checking that document.");
-        System.out.println("Use the --write-messages option to create the file.");
+        System.out.println(Messages.getString("TestRunner.Usage")); //$NON-NLS-1$
     }
 }

@@ -114,7 +114,7 @@ public class EmbeddedValidator {
      */
     public void setOutputFormat(OutputFormat outputFormat) {
         if (outputFormat == null) {
-            throw new IllegalArgumentException("outputFormat can not be null");
+            throw new IllegalArgumentException(Messages.getString("EmbeddedValidator.SetOutputFormat.IllegalArgumentException")); //$NON-NLS-1$
         }
         this.outputFormat = outputFormat;
     }
@@ -208,7 +208,7 @@ public class EmbeddedValidator {
      */
     public void setSchemaUrl(String schemaUrl) {
         if (schemaUrl != null && !schemaUrl.startsWith("http:")) {
-            throw new IllegalArgumentException("schemaUrl should be a URL");
+            throw new IllegalArgumentException(Messages.getString("EmbeddedValidator.SetSchemaUrl.IllegalArgumentException")); //$NON-NLS-1$
         }
         this.schemaUrl = schemaUrl;
     }
@@ -219,9 +219,9 @@ public class EmbeddedValidator {
      */
     private class OneOffValidator implements AutoCloseable {
 
-        private static final String MSG_SUCCESS = "Document checking completed. No errors found.";
-        private static final String MSG_FAIL = "Document checking completed.";
-        private static final String EXTENSION_ERROR = "File was not checked. Files must have .html, .xhtml, .htm, or .xht extensions.";
+        private final String MSG_SUCCESS = Messages.getString("EmbeddedValidator.OneOffValidator.Message.Success"); //$NON-NLS-1$
+        private final String MSG_FAIL = Messages.getString("EmbeddedValidator.OneOffValidator.Message.Fail"); //$NON-NLS-1$
+        private final String EXTENSION_ERROR = Messages.getString("CommonMessage.Error.ExtensionError"); //$NON-NLS-1$
 
         private final AtomicBoolean used = new AtomicBoolean(false);
         private final ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -266,18 +266,19 @@ public class EmbeddedValidator {
             case XML:
                 return new XmlMessageEmitter(new XmlSerializer(this.out));
             default:
-                throw new UnsupportedOperationException("OutputFormat " + outputFormat + " not supported");
+                throw new UnsupportedOperationException(String.format(Messages.getString("EmbeddedValidator.OneOffValidator.NewEmitter.UnsupportedOperationException"), outputFormat.toString())); //$NON-NLS-1$
             }
         }
 
         private String validate(Path path) throws IOException, SAXException {
             if (!used.compareAndSet(false, true)) {
-                throw new IllegalStateException("OneOffValidator instances are not reusable");
+                throw new IllegalStateException(Messages.getString("EmbeddedValidator.OneOffValidator.Validate.IllegalStateException")); //$NON-NLS-1$
             }
             try {
                 if (Files.notExists(path) || !Files.isReadable(path)) {
                     errorHandler.warning(new SAXParseException(
-                            "File not found.", null, path.toString(), -1, -1));
+                            Messages.getString("CommonMessage.Error.FileNotFound"), //$NON-NLS-1$
+                            null, path.toString(), -1, -1));
                 } else if (isXhtml(path.toFile())) {
                     if (forceHtml) {
                         validator.checkHtmlFile(path.toFile(), true);
@@ -309,7 +310,7 @@ public class EmbeddedValidator {
 
         private String validate(InputStream in) throws IOException, SAXException {
             if (!used.compareAndSet(false, true)) {
-                throw new IllegalStateException("OneOffValidator instances are not reusable");
+                throw new IllegalStateException(Messages.getString("EmbeddedValidator.OneOffValidator.Validate.IllegalStateException")); //$NON-NLS-1$
             }
             validator.checkHtmlInputSource(new InputSource(in));
             errorHandler.end(MSG_SUCCESS, MSG_FAIL, "");

@@ -198,7 +198,7 @@ public class SimpleCommandLineValidator {
                             }
                         }
                     } catch (FileNotFoundException e) {
-                        System.err.println("error: File not found: "
+                        System.err.println(Messages.getString("SimpleCommandLineValidator.CLI.Error.FileNotFound") //$NON-NLS-1$
                                 + filterFile.getPath());
                         System.exit(1);
                     } catch (IOException e) {
@@ -218,7 +218,7 @@ public class SimpleCommandLineValidator {
                     if (version != null) {
                         System.out.println(version);
                     } else {
-                        System.out.println("[unknown version]");
+                        System.out.println(Messages.getString("SimpleCommandLineValidator.CLI.Error.Version")); //$NON-NLS-1$
                     }
                     System.exit(0);
                 } else if ("--help".equals(args[i])) {
@@ -250,8 +250,7 @@ public class SimpleCommandLineValidator {
                     hasSchemaOption = true;
                     schemaUrl = args[++i];
                     if (!schemaUrl.startsWith("http:")) {
-                        System.err.println("error: The \"--schema\" option"
-                                + " requires a URL for a schema.");
+                        System.err.println(Messages.getString("SimpleCommandLineValidator.CLI.Error.Schema")); //$NON-NLS-1$
                         System.exit(1);
                     }
                 }
@@ -275,9 +274,7 @@ public class SimpleCommandLineValidator {
             } else if ("json".equals(outFormat)) {
                 outputFormat = OutputFormat.JSON;
             } else {
-                System.err.printf("Error: Unsupported output format \"%s\"."
-                        + " Must be \"gnu\", \"xml\", \"json\","
-                        + " or \"text\".\n", outFormat);
+                System.err.printf(Messages.getString("SimpleCommandLineValidator.CLI.Error.OutputFormat"), outFormat); //$NON-NLS-1$
                 System.exit(1);
             }
         }
@@ -307,7 +304,7 @@ public class SimpleCommandLineValidator {
             checkFiles(args, fileArgsStart);
             end();
         } else {
-            System.err.printf("\nError: No documents specified.\n");
+            System.err.printf(Messages.getString("SimpleCommandLineValidator.CLI.Error.NoDocument")); //$NON-NLS-1$
             usage();
             System.exit(1);
         }
@@ -318,16 +315,10 @@ public class SimpleCommandLineValidator {
         try {
             validator.setUpMainSchema(schemaUrl, new SystemErrErrorHandler());
         } catch (SchemaReadException e) {
-            System.out.println(e.getMessage() + " Terminating.");
+            System.out.println(e.getMessage() + Messages.getString("SimpleCommandLineValidator.SetSchema.Message.Terminating")); //$NON-NLS-1$
             System.exit(1);
         } catch (StackOverflowError e) {
-            System.out.println("StackOverflowError"
-                    + " while evaluating HTML schema.");
-            System.out.println("The checker requires a java thread stack size"
-                    + " of at least 512k.");
-            System.out.println("Consider invoking java with the -Xss"
-                    + " option. For example:");
-            System.out.println("\n  java -Xss512k -jar ~/vnu.jar FILE.html");
+            System.out.println(Messages.getString("SimpleCommandLineValidator.SetSchema.StackOverflowError")); //$NON-NLS-1$
             System.exit(1);
         }
         validator.setUpValidatorAndParsers(errorHandler, noStream, loadEntities);
@@ -345,8 +336,10 @@ public class SimpleCommandLineValidator {
     }
 
     private static void end() throws SAXException {
-        errorHandler.end("Document checking completed. No errors found.",
-                "Document checking completed.", "");
+        errorHandler.end(
+                Messages.getString("SimpleCommandLineValidator.End.SuccessMsg"), //$NON-NLS-1$
+                Messages.getString("SimpleCommandLineValidator.End.FailureMsg"), //$NON-NLS-1$
+                ""); //$NON-NLS-1$
         if (errorHandler.getErrors() > 0 || errorHandler.getFatalErrors() > 0
                 || (wError && errorHandler.getWarnings() > 0)) {
             System.exit(exitZeroAlways ? 0 : 1);
@@ -436,8 +429,8 @@ public class SimpleCommandLineValidator {
             if (!file.exists()) {
                 if (verbose) {
                     errorHandler.warning(new SAXParseException(
-                            "File not found.", null,
-                            file.toURI().toURL().toString(), -1, -1));
+                            Messages.getString("CommonMessage.Error.FileNotFound"), //$NON-NLS-1$
+                            null, file.toURI().toURL().toString(), -1, -1));
                 }
                 return;
             } else {
@@ -445,7 +438,7 @@ public class SimpleCommandLineValidator {
             }
         } catch (SAXException e) {
             if (!errorsOnly) {
-                System.err.printf("\"%s\":-1:-1: warning: %s\n",
+                System.err.printf(Messages.getString("SimpleCommandLineValidator.Error.SAXException"), //$NON-NLS-1$
                         file.toURI().toURL().toString(), e.getMessage());
             }
         }
@@ -457,8 +450,8 @@ public class SimpleCommandLineValidator {
             if (!file.exists()) {
                 if (verbose) {
                     errorHandler.warning(new SAXParseException(
-                            "File not found.", null,
-                            file.toURI().toURL().toString(), -1, -1));
+                            Messages.getString("CommonMessage.Error.FileNotFound"), //$NON-NLS-1$
+                            null, file.toURI().toURL().toString(), -1, -1));
                 }
                 return;
             } else {
@@ -467,7 +460,7 @@ public class SimpleCommandLineValidator {
             }
         } catch (SAXException e) {
             if (!errorsOnly) {
-                System.err.printf("\"%s\":-1:-1: warning: %s\n",
+                System.err.printf(Messages.getString("SimpleCommandLineValidator.Error.SAXException"), //$NON-NLS-1$
                         file.toURI().toURL().toString(), e.getMessage());
             }
         }
@@ -479,8 +472,8 @@ public class SimpleCommandLineValidator {
             if (!file.exists()) {
                 if (verbose) {
                     errorHandler.warning(new SAXParseException(
-                            "File not found.", null,
-                            file.toURI().toURL().toString(), -1, -1));
+                            Messages.getString("CommonMessage.Error.FileNotFound"), //$NON-NLS-1$
+                            null, file.toURI().toURL().toString(), -1, -1));
                 }
                 return;
             } else if (isXhtml(file)) {
@@ -504,14 +497,13 @@ public class SimpleCommandLineValidator {
             } else {
                 if (verbose) {
                     errorHandler.warning(new SAXParseException(
-                            "File was not checked. Files must have .html,"
-                                    + " .xhtml, .htm, or .xht extensions.",
+                            Messages.getString("CommonMessage.Error.ExtensionError"), //$NON-NLS-1$
                             null, file.toURI().toURL().toString(), -1, -1));
                 }
             }
         } catch (SAXException e) {
             if (!errorsOnly) {
-                System.err.printf("\"%s\":-1:-1: warning: %s\n",
+                System.err.printf(Messages.getString("SimpleCommandLineValidator.Error.SAXException"), //$NON-NLS-1$
                         file.toURI().toURL().toString(), e.getMessage());
             }
         }
@@ -570,47 +562,13 @@ public class SimpleCommandLineValidator {
                     new JsonMessageEmitter(
                             new nu.validator.json.Serializer(out), callback));
         } else {
-            throw new RuntimeException("Bug. Should be unreachable.");
+            throw new RuntimeException(Messages.getString("SimpleCommandLineValidator.SetErrorHandler.RuntimeException")); //$NON-NLS-1$
         }
         errorHandler.setErrorsOnly(errorsOnly);
     }
 
     private static void usage() {
-        System.out.println("Usage:");
-        System.out.println("");
-        System.out.println("    vnu-runtime-image/bin/vnu OPTIONS FILES (Linux or macOS)");
-        System.out.println("    vnu-runtime-image\\bin\\vnu.bat OPTIONS FILES (Windows)");
-        System.out.println("    java -jar ~/vnu.jar OPTIONS FILES (any system with Java8+ installed)");
-        System.out.println("");
-        System.out.println("...where FILES are the documents to check, and OPTIONS are zero or more of:");
-        System.out.println("");
-        System.out.println("    --errors-only --Werror --exit-zero-always --asciiquotes");
-        System.out.println("    --user-agent USER_AGENT --no-langdetect --no-stream --filterfile FILENAME");
-        System.out.println("    --filterpattern PATTERN --css --skip-non-css --also-check-css --svg");
-        System.out.println("    --skip-non-svg --also-check-svg --html --skip-non-html");
-        System.out.println("    --format gnu|xml|json|text --help --verbose --version");
-        System.out.println("");
-        System.out.println("For detailed usage information, try the \"--help\" option or see:");
-        System.out.println("");
-        System.out.println("  http://validator.github.io/");
-        System.out.println("");
-        System.out.println("To read from stdin, use \"-\" as the filename, like this: \"java -jar vnu.jar - \".");
-        System.out.println("");
-        System.out.println("To run the checker as a standalone Web-based service, open a new terminal");
-        System.out.println("window and invoke the checker like this");
-        System.out.println("");
-        System.out.println("    java -cp vnu.jar nu.validator.servlet.Main 8888");
-        System.out.println("    vnu-runtime-image/bin/java nu.validator.servlet.Main 8888");
-        System.out.println("    vnu-runtime-image\\bin\\java -cp vnu.jar nu.validator.servlet.Main 8888");
-        System.out.println("");
-        System.out.println("...then open http://127.0.0.1:8888 in a browser.");
-        System.out.println("");
-        System.out.println("After that, to check documents locally using the packaged HTTP client, do this:");
-        System.out.println("");
-        System.out.println("    java -cp vnu.jar nu.validator.client.HttpClient FILES");
-        System.out.println("    vnu-runtime-image/bin/java nu.validator.client.HttpClient FILES");
-        System.out.println("    vnu-runtime-image\\bin\\java nu.validator.client.HttpClient FILES");
-        System.out.println("");
+        System.out.println(Messages.getString("SimpleCommandLineValidator.Usage.Msg")); //$NON-NLS-1$
     }
 
     private static void help() {

@@ -71,7 +71,7 @@ public class HttpClient {
             int filecount = (args.length == 0 ? 1 : args.length);
             for (int i = 0; i < filecount; i++) {
                 if (args.length == 0 || "-".equals(args[i])) {
-                  System.err.println("Waiting for document content on standard input...");
+                    System.err.println(Messages.getString("HttpClient.Message.WaitingForDocumentInput")); //$NON-NLS-1$
                     input = System.in;
                     filename = "[stdin]";
                 } else {
@@ -117,10 +117,7 @@ public class HttpClient {
             System.exit(1);
         } catch (IOException e) {
             if (e instanceof ConnectException) {
-                System.out.printf(
-                        "\nerror: Expected to find validator service"
-                                + " at %s but could not connect. Stopping.\n",
-                        origin);
+                System.out.printf(Messages.getString("HttpClient.Message.ErrorValidatorServiceConnection"), origin); //$NON-NLS-1$
                 System.exit(1);
             } else {
                 e.printStackTrace();
