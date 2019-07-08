@@ -174,21 +174,27 @@ public class Assertions extends Checker {
 
     static {
         OBSOLETE_ELEMENTS.put("keygen", "");
-        OBSOLETE_ELEMENTS.put("center", "Use CSS instead.");
-        OBSOLETE_ELEMENTS.put("font", "Use CSS instead.");
-        OBSOLETE_ELEMENTS.put("big", "Use CSS instead.");
-        OBSOLETE_ELEMENTS.put("strike", "Use CSS instead.");
-        OBSOLETE_ELEMENTS.put("tt", "Use CSS instead.");
+        OBSOLETE_ELEMENTS.put("center",
+                Messages.getString("Assertions.UseCSSInstead")); //$NON-NLS-1$
+        OBSOLETE_ELEMENTS.put("font",
+                Messages.getString("Assertions.UseCSSInstead")); //$NON-NLS-1$
+        OBSOLETE_ELEMENTS.put("big",
+                Messages.getString("Assertions.UseCSSInstead")); //$NON-NLS-1$
+        OBSOLETE_ELEMENTS.put("strike",
+                Messages.getString("Assertions.UseCSSInstead")); //$NON-NLS-1$
+        OBSOLETE_ELEMENTS.put("tt",
+                Messages.getString("Assertions.UseCSSInstead")); //$NON-NLS-1$
         OBSOLETE_ELEMENTS.put("acronym",
-                "Use the \u201Cabbr\u201D element instead.");
-        OBSOLETE_ELEMENTS.put("dir", "Use the \u201Cul\u201D element instead.");
+                String.format(Messages.getString("Assertions.UseElement"), "addr")); //$NON-NLS-1$
+        OBSOLETE_ELEMENTS.put("dir",
+                String.format(Messages.getString("Assertions.UseElement"), "ul")); //$NON-NLS-1$
         OBSOLETE_ELEMENTS.put("applet",
-                "Use the \u201Cobject\u201D element instead.");
-        OBSOLETE_ELEMENTS.put("basefont", "Use CSS instead.");
-        OBSOLETE_ELEMENTS.put("frameset",
-                "Use the \u201Ciframe\u201D element and CSS instead, or use server-side includes.");
-        OBSOLETE_ELEMENTS.put("noframes",
-                "Use the \u201Ciframe\u201D element and CSS instead, or use server-side includes.");
+                String.format(Messages.getString("Assertions.UseElement"), "object")); //$NON-NLS-1$
+        OBSOLETE_ELEMENTS.put("basefont",
+                Messages.getString("Assertions.UseCSSInstead")); //$NON-NLS-1$
+        String msg = String.format(Messages.getString("Assertions.UseElement"), "inflame");//$NON-NLS-1$
+        OBSOLETE_ELEMENTS.put("frameset", msg);
+        OBSOLETE_ELEMENTS.put("noframes", msg);
     }
 
     private static final Map<String, String[]> OBSOLETE_ATTRIBUTES = new HashMap<>();
@@ -235,67 +241,47 @@ public class Assertions extends Checker {
     private static final Map<String, String> OBSOLETE_ATTRIBUTES_MSG = new HashMap<>();
 
     static {
-        OBSOLETE_ATTRIBUTES_MSG.put("abbr",
-                "Consider instead beginning the cell contents with concise text, followed by further elaboration if needed.");
+        OBSOLETE_ATTRIBUTES_MSG.put("abbr", Messages.getString("Assertions.Obs.AddrMsg")); //$NON-NLS-1$
         OBSOLETE_ATTRIBUTES_MSG.put("archive",
-                "Use the \u201Cdata\u201D and \u201Ctype\u201D attributes to invoke plugins. To set a parameter with the name \u201Carchive\u201D, use the \u201Cparam\u201D element.");
+                String.format(Messages.getString("Assertions.Obs.UseParamElement"), "archive")); //$NON-NLS-1$
         OBSOLETE_ATTRIBUTES_MSG.put("axis",
-                "Use the \u201Cscope\u201D attribute.");
+                String.format(Messages.getString("Assertions.Obs.UseAttributeInstead"), "scope")); //$NON-NLS-1$
         OBSOLETE_ATTRIBUTES_MSG.put("charset",
-                "Use an HTTP Content-Type header on the linked resource instead.");
+                Messages.getString("Assertions.Obs.CharsetMsg")); //$NON-NLS-1$
         OBSOLETE_ATTRIBUTES_MSG.put("classid",
-                "Use the \u201Cdata\u201D and \u201Ctype\u201D attributes to invoke plugins. To set a parameter with the name \u201Cclassid\u201D, use the \u201Cparam\u201D element.");
+                String.format(Messages.getString("Assertions.Obs.UseParamElement"), "classid")); //$NON-NLS-1$
         OBSOLETE_ATTRIBUTES_MSG.put("code",
-                "Use the \u201Cdata\u201D and \u201Ctype\u201D attributes to invoke plugins. To set a parameter with the name \u201Ccode\u201D, use the \u201Cparam\u201D element.");
+                String.format(Messages.getString("Assertions.Obs.UseParamElement"), "code")); //$NON-NLS-1$
         OBSOLETE_ATTRIBUTES_MSG.put("codebase",
-                "Use the \u201Cdata\u201D and \u201Ctype\u201D attributes to invoke plugins. To set a parameter with the name \u201Ccodebase\u201D, use the \u201Cparam\u201D element.");
+                String.format(Messages.getString("Assertions.Obs.UseParamElement"), "codebase")); //$NON-NLS-1$
         OBSOLETE_ATTRIBUTES_MSG.put("codetype",
-                "Use the \u201Cdata\u201D and \u201Ctype\u201D attributes to invoke plugins. To set a parameter with the name \u201Ccodetype\u201D, use the \u201Cparam\u201D element.");
-        OBSOLETE_ATTRIBUTES_MSG.put("coords",
-                "Use \u201Carea\u201D instead of \u201Ca\u201D for image maps.");
-        OBSOLETE_ATTRIBUTES_MSG.put("datapagesize", "You can safely omit it.");
-        OBSOLETE_ATTRIBUTES_MSG.put("datafld",
-                "Use script and a mechanism such as XMLHttpRequest to populate the page dynamically");
-        OBSOLETE_ATTRIBUTES_MSG.put("dataformatas",
-                "Use script and a mechanism such as XMLHttpRequest to populate the page dynamically");
-        OBSOLETE_ATTRIBUTES_MSG.put("datasrc",
-                "Use script and a mechanism such as XMLHttpRequest to populate the page dynamically");
-        OBSOLETE_ATTRIBUTES_MSG.put("for",
-                "Use DOM Events mechanisms to register event listeners.");
-        OBSOLETE_ATTRIBUTES_MSG.put("event",
-                "Use DOM Events mechanisms to register event listeners.");
-        OBSOLETE_ATTRIBUTES_MSG.put("declare",
-                "Repeat the \u201Cobject\u201D element completely each time the resource is to be reused.");
+                String.format(Messages.getString("Assertions.Obs.UseParamElement"), "codetype")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("coords", Messages.getString("Assertions.Obs.UseAreaForImageMaps")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("datapagesize", Messages.getString("Assertions.CanSafelyOmit")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("datafld", Messages.getString("Assertions.Obs.UseScriptAndMechanism")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("dataformatas", Messages.getString("Assertions.Obs.UseScriptAndMechanism")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("datasrc", Messages.getString("Assertions.Obs.UseScriptAndMechanism")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("for", Messages.getString("Assertions.Obs.UseDOMEvents")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("event", Messages.getString("Assertions.Obs.UseDOMEvents")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("declare", Messages.getString("Assertions.Obs.DeclareMsg")); //$NON-NLS-1$
         OBSOLETE_ATTRIBUTES_MSG.put("language",
-                "Use the \u201Ctype\u201D attribute instead.");
-        OBSOLETE_ATTRIBUTES_MSG.put("longdesc",
-                "Use a regular \u201Ca\u201D element to link to the description.");
-        OBSOLETE_ATTRIBUTES_MSG.put("methods",
-                "Use the HTTP OPTIONS feature instead.");
+                String.format(Messages.getString("Assertions.Obs.UseAttributeInstead"), "type")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("longdesc", Messages.getString("Assertions.Obs.LongdescMsg")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("methods", Messages.getString("Assertions.Obs.MethodsMsg")); //$NON-NLS-1$
         OBSOLETE_ATTRIBUTES_MSG.put("name",
-                "Use the \u201Cid\u201D attribute instead.");
-        OBSOLETE_ATTRIBUTES_MSG.put("nohref",
-                "Omitting the \u201Chref\u201D attribute is sufficient.");
-        OBSOLETE_ATTRIBUTES_MSG.put("profile",
-                "To declare which \u201Cmeta\u201D terms are used in the document, instead register the names as meta extensions. To trigger specific UA behaviors, use a \u201Clink\u201D element instead.");
-        OBSOLETE_ATTRIBUTES_MSG.put("scheme",
-                "Use only one scheme per field, or make the scheme declaration part of the value.");
-        OBSOLETE_ATTRIBUTES_MSG.put("scope",
-                "Use the \u201Cscope\u201D attribute on a \u201Cth\u201D element instead.");
-        OBSOLETE_ATTRIBUTES_MSG.put("shape",
-                "Use \u201Carea\u201D instead of \u201Ca\u201D for image maps.");
-        OBSOLETE_ATTRIBUTES_MSG.put("standby",
-                "Optimise the linked resource so that it loads quickly or, at least, incrementally.");
-        OBSOLETE_ATTRIBUTES_MSG.put("target", "You can safely omit it.");
-        OBSOLETE_ATTRIBUTES_MSG.put("type",
-                "Use the \u201Cname\u201D and \u201Cvalue\u201D attributes without declaring value types.");
-        OBSOLETE_ATTRIBUTES_MSG.put("urn",
-                "Specify the preferred persistent identifier using the \u201Chref\u201D attribute instead.");
-        OBSOLETE_ATTRIBUTES_MSG.put("usemap",
-                "Use the \u201Cimg\u201D element instead of the \u201Cinput\u201D element for image maps.");
-        OBSOLETE_ATTRIBUTES_MSG.put("valuetype",
-                "Use the \u201Cname\u201D and \u201Cvalue\u201D attributes without declaring value types.");
-        OBSOLETE_ATTRIBUTES_MSG.put("version", "You can safely omit it.");
+                String.format(Messages.getString("Assertions.Obs.UseAttributeInstead"), "id")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("nohref", Messages.getString("Assertions.Obs.NohrefMsg")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("profile", Messages.getString("Assertions.Obs.ProfileMsg")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("scheme", Messages.getString("Assertions.Obs.SchemeMsg")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("scope", Messages.getString("Assertions.Obs.ScopeMsg")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("shape", Messages.getString("Assertions.Obs.UseAreaForImageMaps")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("standby", Messages.getString("Assertions.Obs.StandbyMsg")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("target", Messages.getString("Assertions.CanSafelyOmit")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("type", Messages.getString("Assertions.Obs.UseNameAndValueAttrs")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("urn", Messages.getString("Assertions.Obs.UrmMsg")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("usemap", Messages.getString("Assertions.Obs.UsemapMsg")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("valuetype", Messages.getString("Assertions.Obs.UseNameAndValueAttrs")); //$NON-NLS-1$
+        OBSOLETE_ATTRIBUTES_MSG.put("version", Messages.getString("Assertions.CanSafelyOmit")); //$NON-NLS-1$
     }
 
     private static final Map<String, String[]> OBSOLETE_STYLE_ATTRS = new HashMap<>();
@@ -413,7 +399,7 @@ public class Assertions extends Checker {
         int number = specialAncestorNumber(ancestor);
         if (number == -1) {
             throw new IllegalStateException(
-                    "Ancestor not found in array: " + ancestor);
+                    Messages.getString("Assertions.Exception.AncestorNotFound") + ancestor); //$NON-NLS-1$
         }
         Integer maskAsObject = ANCESTOR_MASK_BY_DESCENDANT.get(descendant);
         int mask = 0;
@@ -665,10 +651,8 @@ public class Assertions extends Checker {
         ATTRIBUTES_WITH_IMPLICIT_STATE_OR_PROPERTY.add("required");
     }
 
-    private static final String h1WarningMessage = "Consider using the"
-            + " \u201Ch1\u201D element as a top-level heading only (all"
-            + " \u201Ch1\u201D elements are treated as top-level headings"
-            + " by many screen readers and other tools).";
+    private static final String h1WarningMessage =
+            Messages.getString("Assertions.Warn.h1Message"); //$NON-NLS-1$
 
     private class IdrefLocator {
         private final Locator locator;
@@ -1280,29 +1264,32 @@ public class Assertions extends Checker {
 
     private final void errContainedInOrOwnedBy(String role, Locator locator)
             throws SAXException {
-        err("An element with \u201Crole=" + role + "\u201D"
-                + " must be contained in, or owned by, an element with "
-                + renderRoleSet(REQUIRED_ROLE_ANCESTOR_BY_DESCENDANT.get(role))
-                + ".", locator);
+        err(String.format(
+                Messages.getString("Assertions.Error.ContainedInOrOwnedBy"), //$NON-NLS-1$
+                role,
+                renderRoleSet(REQUIRED_ROLE_ANCESTOR_BY_DESCENDANT.get(role))),
+                locator);
     }
 
     private final void errObsoleteAttribute(String attribute, String element,
             String suggestion) throws SAXException {
-        err("The \u201C" + attribute + "\u201D attribute on the \u201C"
-                + element + "\u201D element is obsolete." + suggestion);
+        err(String.format(
+                Messages.getString("Assertions.ObsoleteAttributeMessage"), //$NON-NLS-1$
+                attribute, element, suggestion));
     }
 
     private final void warnObsoleteAttribute(String attribute, String element,
             String suggestion) throws SAXException {
-        warn("The \u201C" + attribute + "\u201D attribute on the \u201C"
-                + element + "\u201D element is obsolete." + suggestion);
+        warn(String.format(
+                Messages.getString("Assertions.ObsoleteAttributeMessage"), //$NON-NLS-1$
+                attribute, element, suggestion));
     }
 
     private final void warnExplicitRoleUnnecessaryForType(String element,
             String role, String type) throws SAXException {
-        warn("The \u201C" + role + "\u201D role is unnecessary for element"
-                + " \u201C" + element + "\u201D whose" + " type is" + " \u201C"
-                + type + "\u201D.");
+        warn(String.format(
+                Messages.getString("Assertions.Warn.ExplicitRoleUnnecessaryForType"), //$NON-NLS-1$
+                role, element, type));
     }
 
     private boolean currentElementHasRequiredAncestorRole(
@@ -1336,9 +1323,9 @@ public class Assertions extends Checker {
                     && Arrays.binarySearch(
                             PROHIBITED_INTERACTIVE_ANCESTOR_ROLES,
                             ancestorRole) >= 0) {
-                err(descendantUiString + " must not appear as a"
-                        + " descendant of an element with the attribute"
-                        + " \u201Crole=" + ancestorRole + "\u201D.");
+                err(String.format(
+                        Messages.getString("Assertions.Error.InteractiveAncestorRole"), //$NON-NLS-1$
+                        descendantUiString, ancestorRole));
             }
         }
     }
@@ -1351,9 +1338,7 @@ public class Assertions extends Checker {
         // label for
         for (IdrefLocator idrefLocator : formControlReferences) {
             if (!formControlIds.contains(idrefLocator.getIdref())) {
-                err("The value of the \u201Cfor\u201D attribute of the"
-                        + " \u201Clabel\u201D element must be the ID of a"
-                        + " non-hidden form control.",
+                err(Messages.getString("Assertions.Error.Idref"), //$NON-NLS-1$
                         idrefLocator.getLocator());
             }
         }
@@ -1361,7 +1346,7 @@ public class Assertions extends Checker {
         // references to IDs from form attributes
         for (IdrefLocator idrefLocator : formElementReferences) {
             if (!formElementIds.contains(idrefLocator.getIdref())) {
-                err("The \u201Cform\u201D attribute must refer to a form element.",
+                err(Messages.getString("Assertions.Error.FormAttr"), //$NON-NLS-1$
                         idrefLocator.getLocator());
             }
         }
@@ -1369,7 +1354,7 @@ public class Assertions extends Checker {
         // input list
         for (IdrefLocator idrefLocator : listReferences) {
             if (!listIds.contains(idrefLocator.getIdref())) {
-                err("The \u201Clist\u201D attribute of the \u201Cinput\u201D element must refer to a \u201Cdatalist\u201D element.",
+                err(Messages.getString("Assertions.Error.InputListAttr"), //$NON-NLS-1$
                         idrefLocator.getLocator());
             }
         }
@@ -1377,8 +1362,8 @@ public class Assertions extends Checker {
         // ARIA idrefs
         for (IdrefLocator idrefLocator : ariaReferences) {
             if (!allIds.contains(idrefLocator.getIdref())) {
-                err("The \u201C" + idrefLocator.getAdditional()
-                        + "\u201D attribute must point to an element in the same document.",
+                err(String.format(
+                        Messages.getString("Assertions.Error.ARIAIdrefs"), idrefLocator.getAdditional()), //$NON-NLS-1$
                         idrefLocator.getLocator());
             }
         }
@@ -1453,57 +1438,28 @@ public class Assertions extends Checker {
                 if ((node.needsFigcaption() && !node.hasFigcaptionContent())
                         || node.hasTextNode() || node.hasEmbeddedContent()) {
                     for (Locator imgLocator : node.getImagesLackingAlt()) {
-                        err("An \u201Cimg\u201D element must have an"
-                                + " \u201Calt\u201D attribute, except under"
-                                + " certain conditions. For details, consult"
-                                + " guidance on providing text alternatives"
-                                + " for images.", imgLocator);
+                        err(Messages.getString("Assertions.Error.Img.NoAltAttr"), imgLocator); //$NON-NLS-1$
                     }
                 }
             } else if ("picture" == localName) {
                 siblingSources.clear();
             } else if ("select" == localName && node.isOptionNeeded()) {
                 if (!node.hasOption()) {
-                    err("A \u201Cselect\u201D element with a"
-                            + " \u201Crequired\u201D attribute, and without a"
-                            + " \u201Cmultiple\u201D attribute, and without a"
-                            + " \u201Csize\u201D attribute whose value is"
-                            + " greater than"
-                            + " \u201C1\u201D, must have a child"
-                            + " \u201Coption\u201D element.");
+                    err(Messages.getString("Assertions.Error.Select.NoOptionElement")); //$NON-NLS-1$
                 }
                 if (node.nonEmptyOptionLocator() != null) {
-                    err("The first child \u201Coption\u201D element of a"
-                            + " \u201Cselect\u201D element with a"
-                            + " \u201Crequired\u201D attribute, and without a"
-                            + " \u201Cmultiple\u201D attribute, and without a"
-                            + " \u201Csize\u201D attribute whose value is"
-                            + " greater than"
-                            + " \u201C1\u201D, must have either an empty"
-                            + " \u201Cvalue\u201D attribute, or must have no"
-                            + " text content."
-                            + " Consider either adding a placeholder option"
-                            + " label, or adding a"
-                            + " \u201Csize\u201D attribute with a value equal"
-                            + " to the number of"
-                            + " \u201Coption\u201D elements.",
+                    err(Messages.getString("Assertions.Error.Select.EmptyOptionElement"), //$NON-NLS-1$
                             node.nonEmptyOptionLocator());
                 }
             } else if ("section" == localName && !node.hasHeading()) {
-                warn("Section lacks heading. Consider using"
-                        + " \u201ch2\u201d-\u201ch6\u201d elements to add"
-                        + " identifying headings to all sections.",
-                        node.locator());
+                warn(Messages.getString("Assertions.Warn.Section"), node.locator()); //$NON-NLS-1$
             } else if ("article" == localName && !node.hasHeading()) {
-                warn("Article lacks heading. Consider using"
-                        + " \u201ch2\u201d-\u201ch6\u201d elements to add"
-                        + " identifying headings to all articles.",
-                        node.locator());
+                warn(Messages.getString("Assertions.Warn.Article"), node.locator()); //$NON-NLS-1$
             } else if (("h1" == localName || "h2" == localName
                     || "h3" == localName || "h4" == localName
                     || "h5" == localName || "h6" == localName)
                     && !node.hasTextNode() && !node.hasImg()) {
-                warn("Empty heading.", node.locator());
+                warn(Messages.getString("Assertions.Warn.EmptyHeading"), node.locator()); //$NON-NLS-1$
             } else if ("option" == localName
                     && !stack[currentPtr].hasOption()) {
                 stack[currentPtr].setOptionFound();
@@ -1547,11 +1503,10 @@ public class Assertions extends Checker {
                         CssParseException cpe = (CssParseException) ex;
                         if ("generator.unrecognize" //
                                 .equals(cpe.getErrorType())) {
-                            cssMessage = "Parse Error";
+                            cssMessage = Messages.getString("Assertions.Error.ParseError"); //$NON-NLS-1$
                         }
                         if (cpe.getProperty() != null) {
-                            cssProperty = String.format("\u201c%s\u201D: ",
-                                    cpe.getProperty());
+                            cssProperty = String.format("\u201c%s\u201D: ", cpe.getProperty());
                         }
                         if (cpe.getMessage() != null) {
                             cssMessage = cpe.getMessage();
@@ -1598,10 +1553,7 @@ public class Assertions extends Checker {
             }
         }
         if ((locator = openActiveDescendants.remove(node)) != null) {
-            warn("Attribute \u201Caria-activedescendant\u201D value should "
-                    + "either refer to a descendant element, or should "
-                    + "be accompanied by attribute \u201Caria-owns\u201D.",
-                    locator);
+            warn(Messages.getString("Assertions.Warn.AriaActivedescendantAttr"), locator); //$NON-NLS-1$
         }
     }
 
@@ -1714,17 +1666,15 @@ public class Assertions extends Checker {
                         for (int j = 0; j < attLocal.length(); j++) {
                             char c = attLocal.charAt(j);
                             if (c >= 'A' && c <= 'Z') {
-                                err("Bad attribute name \u201c" + attLocal
-                                        + "\u201d. Attribute names for the"
-                                        + " \u201cembed\u201d element must not"
-                                        + " contain uppercase ASCII letters.");
+                                err(String.format(
+                                        Messages.getString("Assertions.Error.BadAttrName.UpperASCIILetters"), //$NON-NLS-1$
+                                        attLocal));
                             }
                         }
                         if (!NCName.isNCName(attLocal)) {
-                            err("Bad attribute name \u201c" + attLocal
-                                    + "\u201d. Attribute names for the"
-                                    + " \u201cembed\u201d element must be"
-                                    + " XML-compatible.");
+                            err(String.format(
+                                    Messages.getString("Assertions.Error.BadAttrName.NotXMLCompatible"), //$NON-NLS-1$
+                                    attLocal));
                         }
                     }
                     if ("style" == attLocal) {
@@ -1760,7 +1710,7 @@ public class Assertions extends Checker {
                                 CssParseException cpe = (CssParseException) ex;
                                 if ("generator.unrecognize" //
                                         .equals(cpe.getErrorType())) {
-                                    cssMessage = "Parse Error";
+                                    cssMessage = Messages.getString("Assertions.Error.ParseError"); //$NON-NLS-1$
                                 }
                                 if (cpe.getProperty() != null) {
                                     cssProperty = String.format(
@@ -1844,8 +1794,7 @@ public class Assertions extends Checker {
                             && !("1".equals(System.getProperty(
                                     "nu.validator.schema.rdfa-full")))) {
                         errObsoleteAttribute("rev", localName,
-                                " Use the \u201Crel\u201D attribute instead,"
-                                        + " with a term having the opposite meaning.");
+                                Messages.getString("Assertions.Error.Misuse.OppositeMeaning")); //$NON-NLS-1$
                     } else if (OBSOLETE_ATTRIBUTES.containsKey(attLocal)
                             && "ol" != localName && "ul" != localName
                             && "li" != localName) {
@@ -1867,7 +1816,7 @@ public class Assertions extends Checker {
                         Arrays.sort(elementNames);
                         if (Arrays.binarySearch(elementNames, localName) >= 0) {
                             errObsoleteAttribute(attLocal, localName,
-                                    " Use CSS instead.");
+                                    Messages.getString("Assertions.UseCSSInstead")); //$NON-NLS-1$
                         }
                     } else if (INPUT_ATTRIBUTES.containsKey(attLocal)
                             && "input" == localName) {
@@ -1877,15 +1826,13 @@ public class Assertions extends Checker {
                                 : inputTypeVal;
                         if (Arrays.binarySearch(allowedTypes,
                                 inputTypeVal) < 0) {
-                            err("Attribute \u201c" + attLocal
-                                    + "\u201d is only allowed when the input"
-                                    + " type is " + renderTypeList(allowedTypes)
-                                    + ".");
+                            err(String.format(
+                                    Messages.getString("Assertions.Error.DenyInputType"), //$NON-NLS-1$
+                                    attLocal, renderTypeList(allowedTypes)));
                         }
                     } else if ("autofocus" == attLocal) {
                         if (hasAutofocus) {
-                            err("A document must not include more than one"
-                                    + " \u201Cautofocus\u201D attribute.");
+                            err(Messages.getString("Assertions.Error.ManyAutofocusAttrs")); //$NON-NLS-1$
                         }
                         hasAutofocus = true;
                     } else if (ATTRIBUTES_WITH_IMPLICIT_STATE_OR_PROPERTY.contains(
@@ -1894,10 +1841,9 @@ public class Assertions extends Checker {
                         if (atts.getIndex("", stateOrProperty) > -1
                                 && "true".equals(
                                         atts.getValue("", stateOrProperty))) {
-                            warn("Attribute \u201C" + stateOrProperty
-                                    + "\u201D is unnecessary for elements that"
-                                    + " have attribute \u201C" + attLocal
-                                    + "\u201D.");
+                            warn(String.format(
+                                    Messages.getString("Assertions.Warn.UnnecessaryElements"), //$NON-NLS-1$
+                                    stateOrProperty, attLocal));
                         }
                     }
                 } else if ("http://www.w3.org/XML/1998/namespace" == attUri) {
@@ -1917,9 +1863,7 @@ public class Assertions extends Checker {
             if ("input".equals(localName)) {
                 if (atts.getIndex("", "name") > -1
                         && "isindex".equals(atts.getValue("", "name"))) {
-                    err("The value \u201cisindex\u201d for the \u201cname\u201d"
-                            + " attribute of the \u201cinput\u201d element is"
-                            + " not allowed.");
+                    err(Messages.getString("Assertions.Error.Input.IsindexValueForNameAttr")); //$NON-NLS-1$
                 }
                 inputTypeVal = inputTypeVal == null ? "text" : inputTypeVal;
                 if (atts.getIndex("", "autocomplete") > -1) {
@@ -1999,11 +1943,7 @@ public class Assertions extends Checker {
                         if ("1".equals(System.getProperty(
                                 "nu.validator.checker.imageCandidateString.hasWidth"))) {
                             if (atts.getIndex("", "sizes") < 0) {
-                                err("When the \u201csrcset\u201d attribute has"
-                                        + " any image candidate string with a"
-                                        + " width descriptor, the"
-                                        + " \u201csizes\u201d attribute"
-                                        + " must also be present.");
+                                err(Messages.getString("Assertions.Error.Image.Srcset.NoSizesAttr")); //$NON-NLS-1$
                             }
                         }
                     } catch (DatatypeException e) {
@@ -2039,34 +1979,20 @@ public class Assertions extends Checker {
                             String media = sourceAtts.get("media");
                             if (media == null
                                     && sourceAtts.get("type") == null) {
-                                err("A \u201csource\u201d element that has a"
-                                        + " following sibling"
-                                        + " \u201csource\u201d element or"
-                                        + " \u201cimg\u201d element with a"
-                                        + " \u201csrcset\u201d attribute"
-                                        + " must have a"
-                                        + " \u201cmedia\u201d attribute and/or"
-                                        + " \u201ctype\u201d attribute.",
-                                        locator);
+                                err(Messages.getString("Assertions.Error.MisssingAttres"), locator); //$NON-NLS-1$
                                 siblingSources.remove(locator);
                             } else if (media != null
                                     && "".equals(trimSpaces(media))) {
-                                err("Value of \u201cmedia\u201d attribute here"
-                                        + " must not be empty.",
-                                        locator);
+                                err(Messages.getString("Assertions.Error.Media.EmptyValue"), locator); //$NON-NLS-1$
                             } else if (media != null
                                     && AttributeUtil.lowerCaseLiteralEqualsIgnoreAsciiCaseString(
                                             "all", trimSpaces(media))) {
-                                err("Value of \u201cmedia\u201d attribute here"
-                                        + " must not be \u201call\u201d.",
-                                        locator);
+                                err(Messages.getString("Assertions.Error.Media.AllValue"), locator); //$NON-NLS-1$
                             }
                         }
                     }
                 } else if (atts.getIndex("", "sizes") > -1) {
-                    err("The \u201csizes\u201d attribute may be specified"
-                            + " only if the \u201csrcset\u201d attribute is"
-                            + " also present.");
+                    err(Messages.getString("Assertions.Error.UseSizesAttrWithoutSrcsetAttr")); //$NON-NLS-1$
                 }
             }
 
@@ -2133,56 +2059,64 @@ public class Assertions extends Checker {
 
             // Obsolete elements
             if (OBSOLETE_ELEMENTS.get(localName) != null) {
-                err("The \u201C" + localName + "\u201D element is obsolete. "
-                        + OBSOLETE_ELEMENTS.get(localName));
+                err(String.format(
+                        Messages.getString("Assertions.Error.UseObsoleteElements"), //$NON-NLS-1$
+                        localName, OBSOLETE_ELEMENTS.get(localName)));
             }
 
             // Exclusions
             Integer maskAsObject;
             int mask = 0;
-            String descendantUiString = "The element \u201C" + localName
-                    + "\u201D";
+            String descendantUiString = String.format(
+                    Messages.getString("Assertions.Error.Exclusions.Message"), localName); //$NON-NLS-1$
             if ((maskAsObject = ANCESTOR_MASK_BY_DESCENDANT.get(
                     localName)) != null) {
                 mask = maskAsObject.intValue();
             } else if ("video" == localName && controls) {
                 mask = A_BUTTON_MASK;
-                descendantUiString = "The element \u201Cvideo\u201D with the"
-                        + " attribute \u201Ccontrols\u201D";
+                descendantUiString = String.format(
+                        Messages.getString("Assertions.Error.Exclusions.ElementMsg"),
+                        "video", "controls"); //$NON-NLS-1$
                 checkForInteractiveAncestorRole(descendantUiString);
             } else if ("audio" == localName && controls) {
                 mask = A_BUTTON_MASK;
-                descendantUiString = "The element \u201Caudio\u201D with the"
-                        + " attribute \u201Ccontrols\u201D";
+                descendantUiString = String.format(
+                        Messages.getString("Assertions.Error.Exclusions.ElementMsg"),
+                        "audio", "controls"); //$NON-NLS-1$
                 checkForInteractiveAncestorRole(descendantUiString);
             } else if ("menu" == localName && toolbar) {
                 mask = A_BUTTON_MASK;
-                descendantUiString = "The element \u201Cmenu\u201D with the"
-                        + " attribute \u201Ctype=toolbar\u201D";
+                descendantUiString = String.format(
+                        Messages.getString("Assertions.Error.Exclusions.ElementMsg"),
+                        "menu", "type=toolbar"); //$NON-NLS-1$
                 checkForInteractiveAncestorRole(descendantUiString);
             } else if ("img" == localName && usemap) {
                 mask = A_BUTTON_MASK;
-                descendantUiString = "The element \u201Cimg\u201D with the"
-                        + " attribute \u201Cusemap\u201D";
+                descendantUiString = String.format(
+                        Messages.getString("Assertions.Error.Exclusions.ElementMsg"),
+                        "img", "usemap"); //$NON-NLS-1$
                 checkForInteractiveAncestorRole(descendantUiString);
             } else if ("object" == localName && usemap) {
                 mask = A_BUTTON_MASK;
-                descendantUiString = "The element \u201Cobject\u201D with the"
-                        + " attribute \u201Cusemap\u201D";
+                descendantUiString = String.format(
+                        Messages.getString("Assertions.Error.Exclusions.ElementMsg"),
+                        "object", "usemap"); //$NON-NLS-1$
                 checkForInteractiveAncestorRole(descendantUiString);
             } else if ("input" == localName && !hidden) {
                 mask = A_BUTTON_MASK;
                 checkForInteractiveAncestorRole(descendantUiString);
             } else if (tabindex) {
                 mask = A_BUTTON_MASK;
-                descendantUiString = "An element with the attribute"
-                        + " \u201Ctabindex\u201D";
+                descendantUiString = String.format(
+                        Messages.getString("Assertions.Error.Exclusions.AttributeMsg"), //$NON-NLS-1$
+                        "tabindex");
                 checkForInteractiveAncestorRole(descendantUiString);
             } else if (role != null && role != ""
                     && Arrays.binarySearch(INTERACTIVE_ROLES, role) >= 0) {
                 mask = A_BUTTON_MASK;
-                descendantUiString = "An element with the attribute \u201C"
-                        + "role=" + role + "\u201D";
+                descendantUiString = String.format(
+                        Messages.getString("Assertions.Error.Exclusions.AttributeMsg"), //$NON-NLS-1$
+                        "role=" + role);
                 checkForInteractiveAncestorRole(descendantUiString);
             }
             if (mask != 0) {
@@ -2190,38 +2124,32 @@ public class Assertions extends Checker {
                 if (maskHit != 0) {
                     for (String ancestor : SPECIAL_ANCESTORS) {
                         if ((maskHit & 1) != 0) {
-                            err(descendantUiString + " must not appear as a"
-                                    + " descendant of the \u201C" + ancestor
-                                    + "\u201D element.");
+                            err(String.format(
+                                    Messages.getString("Assertions.Error.Exclusions"), //$NON-NLS-1$
+                                    descendantUiString, ancestor));
                         }
                         maskHit >>= 1;
                     }
                 }
             }
             if (Arrays.binarySearch(INTERACTIVE_ELEMENTS, localName) >= 0) {
-                checkForInteractiveAncestorRole(
-                        "The element \u201C" + localName + "\u201D");
+                checkForInteractiveAncestorRole(String.format(
+                        Messages.getString("Assertions.Error.Exclusions.Message"), //$NON-NLS-1$
+                        localName));
             }
 
             // Ancestor requirements/restrictions
             if ("area" == localName && ((ancestorMask & MAP_MASK) == 0)) {
-                err("The \u201Carea\u201D element must have a \u201Cmap\u201D ancestor.");
+                err(Messages.getString("Assertions.Error.AncestorRequirments.Area")); //$NON-NLS-1$
             } else if ("img" == localName) {
                 String titleVal = atts.getValue("", "title");
                 if (ismap && ((ancestorMask & HREF_MASK) == 0)) {
-                    err("The \u201Cimg\u201D element with the "
-                            + "\u201Cismap\u201D attribute set must have an "
-                            + "\u201Ca\u201D ancestor with the "
-                            + "\u201Chref\u201D attribute.");
+                    err(Messages.getString("Assertions.Error.AncestorRequirments.Img.Ismap")); //$NON-NLS-1$
                 }
                 if (atts.getIndex("", "alt") < 0) {
                     if ((titleVal == null || "".equals(titleVal))) {
                         if ((ancestorMask & FIGURE_MASK) == 0) {
-                            err("An \u201Cimg\u201D element must have an"
-                                    + " \u201Calt\u201D attribute, except under"
-                                    + " certain conditions. For details, consult"
-                                    + " guidance on providing text alternatives"
-                                    + " for images.");
+                            err(Messages.getString("Assertions.Error.AncestorRequirments.Img.Alt")); //$NON-NLS-1$
                         } else {
                             stack[currentFigurePtr].setFigcaptionNeeded();
                             stack[currentFigurePtr].addImageLackingAlt(
@@ -2234,29 +2162,18 @@ public class Assertions extends Checker {
                                 .toLowerCase().split("\\s+"));
                         if (!roles.contains("none")
                                 && !roles.contains("presentation")) {
-                            err("An \u201Cimg\u201D element which has an"
-                                    + " \u201Calt\u201D attribute whose value"
-                                    + " is the empty string must not have a"
-                                    + " \u201Crole\u201D attribute with any"
-                                    + " value other than \u201Cnone\u201D or"
-                                    + " \u201Cpresentation\u201D");
+                            err(Messages.getString("Assertions.Error.AncestorRequirments.Img.Alt.Empty")); //$NON-NLS-1$
                         }
                     }
                 }
             } else if ("table" == localName) {
                 if (atts.getIndex("", "summary") >= 0) {
                     errObsoleteAttribute("summary", "table",
-                            " Consider describing the structure of the"
-                                    + " \u201Ctable\u201D in a \u201Ccaption\u201D "
-                                    + " element or in a \u201Cfigure\u201D element "
-                                    + " containing the \u201Ctable\u201D; or,"
-                                    + " simplify the structure of the"
-                                    + " \u201Ctable\u201D so that no description"
-                                    + " is needed.");
+                            Messages.getString("Assertions.Error.AncestorRequirments.Table")); //$NON-NLS-1$
                 }
                 if (atts.getIndex("", "border") > -1) {
                     errObsoleteAttribute("border", "table",
-                            " Use CSS instead.");
+                            Messages.getString("Assertions.UseCSSInstead")); //$NON-NLS-1$
                 }
             } else if ("track" == localName
                     && atts.getIndex("", "default") >= 0) {
@@ -2264,15 +2181,9 @@ public class Assertions extends Checker {
                     StackNode node = entry.getKey();
                     TaintableLocatorImpl locator = entry.getValue();
                     if (node.isTrackDescendant()) {
-                        err("The \u201Cdefault\u201D attribute must not occur"
-                                + " on more than one \u201Ctrack\u201D element"
-                                + " within the same \u201Caudio\u201D or"
-                                + " \u201Cvideo\u201D element.");
+                        err(Messages.getString("Assertions.Error.Track.Default")); //$NON-NLS-1$
                         if (!locator.isTainted()) {
-                            warn("\u201Caudio\u201D or \u201Cvideo\u201D element"
-                                    + " has more than one \u201Ctrack\u201D child"
-                                    + " element with a \u201Cdefault\u201D attribute.",
-                                    locator);
+                            warn(Messages.getString("Assertions.Warn.Track.ManyDefault"), locator); //$NON-NLS-1$
                             locator.markTainted();
                         }
                     } else {
@@ -2287,15 +2198,14 @@ public class Assertions extends Checker {
                     if (ancestorName != null
                             && Arrays.binarySearch(PROHIBITED_MAIN_ANCESTORS,
                                     ancestorName) >= 0) {
-                        err("The \u201Cmain\u201D element must not appear as a"
-                                + " descendant of the \u201C" + ancestorName
-                                + "\u201D element.");
+                        err(String.format(
+                                Messages.getString("Assertions.Error.Main"), //$NON-NLS-1$
+                                ancestorName));
                     }
                 }
                 if (atts.getIndex("", "hidden") < 0) {
                     if (hasVisibleMain) {
-                        err("A document must not include more than one visible"
-                                + " \u201Cmain\u201D element.");
+                        err(Messages.getString("Assertions.Error.Main.Hidden")); //$NON-NLS-1$
                     }
                     hasVisibleMain = true;
                 }
@@ -2316,11 +2226,13 @@ public class Assertions extends Checker {
                     double max = getDoubleAttribute(atts, "max");
                     if (Double.isNaN(max)) {
                         if (!(value <= 1.0)) {
-                            err("The value of the  \u201Cvalue\u201D attribute must be less than or equal to one when the \u201Cmax\u201D attribute is absent.");
+                            err(String.format(
+                                    Messages.getString("Assertions.Error.Meter.MoreThanOne"), "value", "max")); //$NON-NLS-1$
                         }
                     } else {
                         if (!(value <= max)) {
-                            err("The value of the  \u201Cvalue\u201D attribute must be less than or equal to the value of the \u201Cmax\u201D attribute.");
+                            err(String.format(
+                                    Messages.getString("Assertions.Error.Meter.MoreThan"), "value", "max")); //$NON-NLS-1$
                         }
                     }
                 }
@@ -2337,74 +2249,74 @@ public class Assertions extends Checker {
 
                 if (!Double.isNaN(min) && !Double.isNaN(value)
                         && !(min <= value)) {
-                    err("The value of the \u201Cmin\u201D attribute must be less than or equal to the value of the \u201Cvalue\u201D attribute.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.MoreThan"), "min", "value")); //$NON-NLS-1$
                 }
                 if (Double.isNaN(min) && !Double.isNaN(value)
                         && !(0 <= value)) {
-                    err("The value of the \u201Cvalue\u201D attribute must be greater than or equal to zero when the \u201Cmin\u201D attribute is absent.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.LessThanZero"), "value", "min")); //$NON-NLS-1$
                 }
                 if (!Double.isNaN(value) && !Double.isNaN(max)
                         && !(value <= max)) {
-                    err("The value of the \u201Cvalue\u201D attribute must be less than or equal to the value of the \u201Cmax\u201D attribute.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.MoreThan"), "value", "max")); //$NON-NLS-1$
                 }
                 if (!Double.isNaN(value) && Double.isNaN(max)
                         && !(value <= 1)) {
-                    err("The value of the \u201Cvalue\u201D attribute must be less than or equal to one when the \u201Cmax\u201D attribute is absent.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.MoreThanOne"), "value", "max")); //$NON-NLS-1$
                 }
                 if (!Double.isNaN(min) && !Double.isNaN(max) && !(min <= max)) {
-                    err("The value of the \u201Cmin\u201D attribute must be less than or equal to the value of the \u201Cmax\u201D attribute.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.MoreThan"), "min", "max")); //$NON-NLS-1$
                 }
                 if (Double.isNaN(min) && !Double.isNaN(max) && !(0 <= max)) {
-                    err("The value of the \u201Cmax\u201D attribute must be greater than or equal to zero when the \u201Cmin\u201D attribute is absent.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.LessThanZero"), "max", "min")); //$NON-NLS-1$
                 }
                 if (!Double.isNaN(min) && Double.isNaN(max) && !(min <= 1)) {
-                    err("The value of the \u201Cmin\u201D attribute must be less than or equal to one when the \u201Cmax\u201D attribute is absent.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.MoreThanOne"), "min", "max")); //$NON-NLS-1$
                 }
                 if (!Double.isNaN(min) && !Double.isNaN(low) && !(min <= low)) {
-                    err("The value of the \u201Cmin\u201D attribute must be less than or equal to the value of the \u201Clow\u201D attribute.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.MoreThan"), "min", "low")); //$NON-NLS-1$
                 }
                 if (Double.isNaN(min) && !Double.isNaN(low) && !(0 <= low)) {
-                    err("The value of the \u201Clow\u201D attribute must be greater than or equal to zero when the \u201Cmin\u201D attribute is absent.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.LessThanZero"), "low", "min")); //$NON-NLS-1$
                 }
                 if (!Double.isNaN(min) && !Double.isNaN(high)
                         && !(min <= high)) {
-                    err("The value of the \u201Cmin\u201D attribute must be less than or equal to the value of the \u201Chigh\u201D attribute.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.MoreThan"), "min", "high")); //$NON-NLS-1$
                 }
                 if (Double.isNaN(min) && !Double.isNaN(high) && !(0 <= high)) {
-                    err("The value of the \u201Chigh\u201D attribute must be greater than or equal to zero when the \u201Cmin\u201D attribute is absent.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.LessThanZero"), "high", "min")); //$NON-NLS-1$
                 }
                 if (!Double.isNaN(low) && !Double.isNaN(high)
                         && !(low <= high)) {
-                    err("The value of the \u201Clow\u201D attribute must be less than or equal to the value of the \u201Chigh\u201D attribute.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.MoreThan"), "low", "high")); //$NON-NLS-1$
                 }
                 if (!Double.isNaN(high) && !Double.isNaN(max)
                         && !(high <= max)) {
-                    err("The value of the \u201Chigh\u201D attribute must be less than or equal to the value of the \u201Cmax\u201D attribute.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.MoreThan"), "high", "max")); //$NON-NLS-1$
                 }
                 if (!Double.isNaN(high) && Double.isNaN(max) && !(high <= 1)) {
-                    err("The value of the \u201Chigh\u201D attribute must be less than or equal to one when the \u201Cmax\u201D attribute is absent.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.MoreThanOne"), "high", "max")); //$NON-NLS-1$
                 }
                 if (!Double.isNaN(low) && !Double.isNaN(max) && !(low <= max)) {
-                    err("The value of the \u201Clow\u201D attribute must be less than or equal to the value of the \u201Cmax\u201D attribute.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.MoreThan"), "low", "max")); //$NON-NLS-1$
                 }
                 if (!Double.isNaN(low) && Double.isNaN(max) && !(low <= 1)) {
-                    err("The value of the \u201Clow\u201D attribute must be less than or equal to one when the \u201Cmax\u201D attribute is absent.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.MoreThanOne"), "low", "max")); //$NON-NLS-1$
                 }
                 if (!Double.isNaN(min) && !Double.isNaN(optimum)
                         && !(min <= optimum)) {
-                    err("The value of the \u201Cmin\u201D attribute must be less than or equal to the value of the \u201Coptimum\u201D attribute.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.MoreThan"), "min", "optimum")); //$NON-NLS-1$
                 }
                 if (Double.isNaN(min) && !Double.isNaN(optimum)
                         && !(0 <= optimum)) {
-                    err("The value of the \u201Coptimum\u201D attribute must be greater than or equal to zero when the \u201Cmin\u201D attribute is absent.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.LessThanZero"), "optimum", "min")); //$NON-NLS-1$
                 }
                 if (!Double.isNaN(optimum) && !Double.isNaN(max)
                         && !(optimum <= max)) {
-                    err("The value of the \u201Coptimum\u201D attribute must be less than or equal to the value of the \u201Cmax\u201D attribute.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.MoreThan"), "optimum", "max")); //$NON-NLS-1$
                 }
                 if (!Double.isNaN(optimum) && Double.isNaN(max)
                         && !(optimum <= 1)) {
-                    err("The value of the \u201Coptimum\u201D attribute must be less than or equal to one when the \u201Cmax\u201D attribute is absent.");
+                    err(String.format(Messages.getString("Assertions.Error.Meter.MoreThanOne"), "optimum", "max")); //$NON-NLS-1$
                 }
             }
 
@@ -2412,7 +2324,7 @@ public class Assertions extends Checker {
             else if ("map" == localName && id != null) {
                 String nameVal = atts.getValue("", "name");
                 if (nameVal != null && !nameVal.equals(id)) {
-                    err("The \u201Cid\u201D attribute on a \u201Cmap\u201D element must have an the same value as the \u201Cname\u201D attribute.");
+                    err(Messages.getString("Assertions.Error.MapRequiredAttrs")); //$NON-NLS-1$
                 }
             }
 
@@ -2420,12 +2332,7 @@ public class Assertions extends Checker {
                 if (atts.getIndex("", "typemustmatch") >= 0) {
                     if ((atts.getIndex("", "data") < 0)
                             || (atts.getIndex("", "type") < 0)) {
-                        {
-                            err("Element \u201Cobject\u201D must not have"
-                                    + " attribute \u201Ctypemustmatch\u201D unless"
-                                    + " both attribute \u201Cdata\u201D"
-                                    + " and attribute \u201Ctype\u201D are also specified.");
-                        }
+                        err(Messages.getString("Assertions.Error.Element.Object.Typemustmatch")); //$NON-NLS-1$
                     }
                 }
             }
@@ -2433,10 +2340,7 @@ public class Assertions extends Checker {
                 if (atts.getIndex("", "accept-charset") >= 0) {
                     if (!"utf-8".equals(
                             atts.getValue("", "accept-charset").toLowerCase())) {
-                        err("The only allowed value for the"
-                                + " \u201Caccept-charset\u201D attribute for"
-                                + " the \u201Cform\u201D element is"
-                                + " \u201Cutf-8\u201D.");
+                        err(Messages.getString("Assertions.Error.Form.AcceptCharset")); //$NON-NLS-1$
                     }
                 }
             }
@@ -2444,77 +2348,51 @@ public class Assertions extends Checker {
             else if ("script" == localName) {
                 // script language
                 if (languageJavaScript && typeNotTextJavaScript) {
-                    err("A \u201Cscript\u201D element with the \u201Clanguage=\"JavaScript\"\u201D attribute set must not have a \u201Ctype\u201D attribute whose value is not \u201Ctext/javascript\u201D.");
+                    err(Messages.getString("Assertions.Error.Script.Type")); //$NON-NLS-1$
                 }
                 if (atts.getIndex("", "charset") >= 0) {
                     warnObsoleteAttribute("charset", "script", "");
                     if (!"utf-8".equals(
                             atts.getValue("", "charset").toLowerCase())) {
-                        err("The only allowed value for the \u201Ccharset\u201D"
-                                + " attribute for the \u201Cscript\u201D"
-                                + " element is \u201Cutf-8\u201D. (But the"
-                                + " attribute is not needed and should be"
-                                + " omitted altogether.)");
+                        err(Messages.getString("Assertions.Error.Script.Charset")); //$NON-NLS-1$
                     }
                 }
                 // src-less script
                 if (atts.getIndex("", "src") < 0) {
                     if (atts.getIndex("", "charset") >= 0) {
-                        err("Element \u201Cscript\u201D must not have attribute \u201Ccharset\u201D unless attribute \u201Csrc\u201D is also specified.");
+                        err(String.format(Messages.getString("Assertions.Error.Script.SrcLess"), "charset")); //$NON-NLS-1$
                     }
                     if (atts.getIndex("", "defer") >= 0) {
-                        err("Element \u201Cscript\u201D must not have attribute \u201Cdefer\u201D unless attribute \u201Csrc\u201D is also specified.");
+                        err(String.format(Messages.getString("Assertions.Error.Script.SrcLess"), "defer")); //$NON-NLS-1$
                     }
                     if (atts.getIndex("", "async") >= 0) {
                         if (!(atts.getIndex("", "type") > -1 && //
                                 "module".equals(atts.getValue("", "type") //
                                         .toLowerCase()))) {
-                            err("Element \u201Cscript\u201D must not have"
-                                    + " attribute \u201Casync\u201D unless"
-                                    + " attribute \u201Csrc\u201D is also"
-                                    + " specified or unless attribute"
-                                    + " \u201Ctype\u201D is specified with"
-                                    + " value \u201Cmodule\u201D.");
+                            err(Messages.getString("Assertions.Error.Script.SrcLess.AsyncType")); //$NON-NLS-1$
                         }
                     }
                     if (atts.getIndex("", "integrity") >= 0) {
-                        err("Element \u201Cscript\u201D must not have attribute"
-                                + " \u201Cintegrity\u201D unless attribute"
-                                + " \u201Csrc\u201D is also specified.");
+                        err(String.format(Messages.getString("Assertions.Error.Script.SrcLess"), "integrity")); //$NON-NLS-1$
                     }
                 }
                 if (atts.getIndex("", "type") > -1) {
                     String scriptType = atts.getValue("", "type").toLowerCase();
                     if (JAVASCRIPT_MIME_TYPES.contains(scriptType)
                             || "".equals(scriptType)) {
-                        warn("The \u201Ctype\u201D attribute is unnecessary for"
-                                + " JavaScript resources.");
+                        warn(Messages.getString("Assertions.Warn.Script.UnnecessaryTypeAttr")); //$NON-NLS-1$
                     } else if ("module".equals(scriptType)) {
                         if (atts.getIndex("", "integrity") > -1) {
-                            err("A \u201Cscript\u201D element with an"
-                                    + " \u201Cintegrity\u201D attribute must not have a"
-                                    + " \u201Ctype\u201D attribute with the value"
-                                    + " \u201Cmodule\u201D.");
+                            err(String.format(Messages.getString("Assertions.Error.Script.TypeAttrWithModule"), "integrity")); //$NON-NLS-1$
                         }
                         if (atts.getIndex("", "defer") > -1) {
-                            err("A \u201Cscript\u201D element with a"
-                                    + " \u201Cdefer\u201D attribute must not have a"
-                                    + " \u201Ctype\u201D attribute with the value"
-                                    + " \u201Cmodule\u201D.");
+                            err(String.format(Messages.getString("Assertions.Error.Script.TypeAttrWithModule"), "defer")); //$NON-NLS-1$
                         }
                         if (atts.getIndex("", "nomodule") > -1) {
-                            err("A \u201Cscript\u201D element with a"
-                                    + " \u201Cnomodule\u201D attribute must not have a"
-                                    + " \u201Ctype\u201D attribute with the value"
-                                    + " \u201Cmodule\u201D.");
+                            err(String.format(Messages.getString("Assertions.Error.Script.TypeAttrWithModule"), "nomodule")); //$NON-NLS-1$
                         }
                     } else if (atts.getIndex("", "src") > -1) {
-                            err("A \u201Cscript\u201D element with a"
-                                    + " \u201Csrc\u201D attribute must not have"
-                                    + " a \u201Ctype\u201D attribute whose"
-                                    + " value is anything other than"
-                                    + " the empty string, a JavaScript MIME"
-                                    + " type, or \u201Cmodule\u201D.");
+                        err(Messages.getString("Assertions.Error.Script.Src.TypeAttr")); //$NON-NLS-1$
                     }
                 }
             }
@@ -2522,22 +2400,16 @@ public class Assertions extends Checker {
                 if (atts.getIndex("", "type") > -1) {
                     String styleType = atts.getValue("", "type").toLowerCase();
                     if ("text/css".equals(styleType)) {
-                        warn(" The \u201Ctype\u201D attribute for the"
-                                + " \u201Cstyle\u201D element is not needed and"
-                                + " should be omitted.");
+                        warn(Messages.getString("Assertions.Warn.Style.TypeAttr")); //$NON-NLS-1$
                     } else {
-                        err(" The only allowed value for the \u201Ctype\u201D"
-                                + " attribute for the \u201Cstyle\u201D element"
-                                + " is \u201Ctext/css\u201D (with no"
-                                + " parameters). (But the attribute is not"
-                                + " needed and should be omitted altogether.)");
+                        err(Messages.getString("Assertions.Error.Style.TypeAttr")); //$NON-NLS-1$
                     }
                 }
             }
 
             // bdo required attrs
             else if ("bdo" == localName && atts.getIndex("", "dir") < 0) {
-                err("Element \u201Cbdo\u201D must have attribute \u201Cdir\u201D.");
+                err(Messages.getString("Assertions.Error.BdoRequiredAttrs")); //$NON-NLS-1$
             }
 
             // labelable elements
@@ -2546,13 +2418,8 @@ public class Assertions extends Checker {
                     StackNode node = entry.getKey();
                     Locator locator = entry.getValue();
                     if (node.isLabeledDescendants()) {
-                        err("The \u201Clabel\u201D element may contain at most"
-                                + " one \u201Cbutton\u201D, \u201Cinput\u201D,"
-                                + " \u201Cmeter\u201D, \u201Coutput\u201D,"
-                                + " \u201Cprogress\u201D, \u201Cselect\u201D,"
-                                + " or \u201Ctextarea\u201D descendant.");
-                        warn("\u201Clabel\u201D element with multiple labelable"
-                                + " descendants.", locator);
+                        err(Messages.getString("Assertions.Error.Labelable.Elements")); //$NON-NLS-1$
+                        warn(Messages.getString("Assertions.Warn.Labelable.Elements"), locator); //$NON-NLS-1$
                     } else {
                         node.setLabeledDescendants();
                     }
@@ -2568,11 +2435,7 @@ public class Assertions extends Checker {
                         }
                     }
                     if (id == null || !hasMatchingFor) {
-                        err("Any \u201C" + localName
-                                + "\u201D descendant of a \u201Clabel\u201D"
-                                + " element with a \u201Cfor\u201D attribute"
-                                + " must have an ID value that matches that"
-                                + " \u201Cfor\u201D attribute.");
+                        err(String.format(Messages.getString("Assertions.Error.Labelable.AnyDescendant"), localName)); //$NON-NLS-1$
                     }
                 }
             }
@@ -2580,7 +2443,7 @@ public class Assertions extends Checker {
             // lang and xml:lang for XHTML5
             if (lang != null && xmlLang != null
                     && !equalsIgnoreAsciiCase(lang, xmlLang)) {
-                err("When the attribute \u201Clang\u201D in no namespace and the attribute \u201Clang\u201D in the XML namespace are both present, they must have the same value.");
+                err(Messages.getString("Assertions.Error.XHTML5.Lang")); //$NON-NLS-1$
             }
 
             if (role != null && owns != null) {
@@ -2650,14 +2513,14 @@ public class Assertions extends Checker {
                             "button", atts.getValue("", "type"))) {
                 if (atts.getValue("", "value") == null
                         || "".equals(atts.getValue("", "value"))) {
-                    err("Element \u201Cinput\u201D with attribute \u201Ctype\u201D whose value is \u201Cbutton\u201D must have non-empty attribute \u201Cvalue\u201D.");
+                    err(Messages.getString("Assertions.Error.Input.Type.Button.Value")); //$NON-NLS-1$
                 }
             }
 
             // track
             if ("track" == localName) {
                 if ("".equals(atts.getValue("", "label"))) {
-                    err("Attribute \u201Clabel\u201D for element \u201Ctrack\u201D must have non-empty value.");
+                    err(Messages.getString("Assertions.Error.Track.Label.EmptyValue")); //$NON-NLS-1$
                 }
             }
 
@@ -2666,7 +2529,7 @@ public class Assertions extends Checker {
                 for (Map.Entry<StackNode, Locator> entry : openSingleSelects.entrySet()) {
                     StackNode node = entry.getKey();
                     if (node.isSelectedOptions()) {
-                        err("The \u201Cselect\u201D element cannot have more than one selected \u201Coption\u201D descendant unless the \u201Cmultiple\u201D attribute is specified.");
+                        err(Messages.getString("Assertions.Error.Select.ManyOptions")); //$NON-NLS-1$
                     } else {
                         node.setSelectedOptions();
                     }
@@ -2675,49 +2538,30 @@ public class Assertions extends Checker {
             if ("meta" == localName) {
                 if (AttributeUtil.lowerCaseLiteralEqualsIgnoreAsciiCaseString(
                         "content-language", atts.getValue("", "http-equiv"))) {
-                    err("Using the \u201Cmeta\u201D element to specify the"
-                            + " document-wide default language is obsolete."
-                            + " Consider specifying the language on the root"
-                            + " element instead.");
+                    err(Messages.getString("Assertions.Error.Root.Meta.ContentLanguage")); //$NON-NLS-1$
                 } else if (AttributeUtil.lowerCaseLiteralEqualsIgnoreAsciiCaseString(
                         "x-ua-compatible", atts.getValue("", "http-equiv"))
                         && !AttributeUtil.lowerCaseLiteralEqualsIgnoreAsciiCaseString(
                                 "ie=edge", atts.getValue("", "content"))) {
-                    err("A \u201Cmeta\u201D element with an"
-                            + " \u201Chttp-equiv\u201D attribute whose value is"
-                            + " \u201CX-UA-Compatible\u201D" + " must have a"
-                            + " \u201Ccontent\u201D attribute with the value"
-                            + " \u201CIE=edge\u201D.");
+                    err(Messages.getString("Assertions.Error.Root.Meta.XUACompatible.ContentVal")); //$NON-NLS-1$
                 }
                 if (atts.getIndex("", "charset") > -1) {
                     if (!"utf-8".equals(
                             atts.getValue("", "charset").toLowerCase())) {
-                        err("The only allowed value for the \u201Ccharset\u201D"
-                                + " attribute for the \u201Cmeta\u201D"
-                                + " element is \u201Cutf-8\u201D.");
+                        err(Messages.getString("Assertions.Error.Root.Meata.Charset.NotUTF8")); //$NON-NLS-1$
                     }
                     if (hasMetaCharset) {
-                        err("A document must not include more than one"
-                                + " \u201Cmeta\u201D element with a"
-                                + " \u201Ccharset\u201D attribute.");
+                        err(Messages.getString("Assertions.Error.Root.Meata.Charset.Many")); //$NON-NLS-1$
                     }
                     if (hasContentTypePragma) {
-                        err("A document must not include both a"
-                                + " \u201Cmeta\u201D element with an"
-                                + " \u201Chttp-equiv\u201D attribute"
-                                + " whose value is \u201Ccontent-type\u201D,"
-                                + " and a \u201Cmeta\u201D element with a"
-                                + " \u201Ccharset\u201D attribute.");
+                        err(Messages.getString("Assertions.Error.Root.Meata.BothContentTypeCharset")); //$NON-NLS-1$
                     }
                     hasMetaCharset = true;
                 }
                 if (atts.getIndex("", "name") > -1) {
                     if ("description".equals(atts.getValue("", "name"))) {
                         if (hasMetaDescription) {
-                            err("A document must not include more than one"
-                                    + " \u201Cmeta\u201D element with its"
-                                    + " \u201Cname\u201D attribute set to the"
-                                    + " value \u201Cdescription\u201D.");
+                            err(Messages.getString("Assertions.Error.Root.Meata.Name.Many")); //$NON-NLS-1$
                         }
                         hasMetaDescription = true;
                     }
@@ -2727,8 +2571,7 @@ public class Assertions extends Checker {
                                 "content").toLowerCase();
                         if (contentVal.contains("user-scalable=no")
                                 || contentVal.contains("maximum-scale=1.0")) {
-                            warn("Consider avoiding viewport values that"
-                                    + " prevent users from resizing documents.");
+                            warn(Messages.getString("Assertions.Warn.Root.Meata.Name.ViwpointVals")); //$NON-NLS-1$
                         }
                     }
                     if ("theme-color".equals(atts.getValue("", "name"))
@@ -2763,18 +2606,10 @@ public class Assertions extends Checker {
                                 "content-type",
                                 atts.getValue("", "http-equiv"))) {
                     if (hasMetaCharset) {
-                        err("A document must not include both a"
-                                + " \u201Cmeta\u201D element with an"
-                                + " \u201Chttp-equiv\u201D attribute"
-                                + " whose value is \u201Ccontent-type\u201D,"
-                                + " and a \u201Cmeta\u201D element with a"
-                                + " \u201Ccharset\u201D attribute.");
+                        err(Messages.getString("Assertions.Error.Root.Meata.BothContentTypeCharset")); //$NON-NLS-1$
                     }
                     if (hasContentTypePragma) {
-                        err("A document must not include more than one"
-                                + " \u201Cmeta\u201D element with a"
-                                + " \u201Chttp-equiv\u201D attribute"
-                                + " whose value is \u201Ccontent-type\u201D.");
+                        err(Messages.getString("Assertions.Error.Root.Meata.ContentType")); //$NON-NLS-1$
                     }
                     hasContentTypePragma = true;
                 }
@@ -2793,69 +2628,56 @@ public class Assertions extends Checker {
                                 && !(relList.contains("preload")
                                         || relList.contains("modulepreload"))
                                 || !hasRel))) {
-                    err("A \u201Clink\u201D element with an"
-                            + " \u201Cas\u201D attribute must have a"
-                            + " \u201Crel\u201D attribute that contains the"
-                            + " value \u201Cpreload\u201D.");
+                    err(Messages.getString("Assertions.Error.Root.Link.AS.NoRelAttr")); //$NON-NLS-1$
                 }
                 if (atts.getIndex("", "integrity") > -1
                         && ((relList != null && !relList.contains("stylesheet")
                                 && !relList.contains("preload")
                                 && !relList.contains("modulepreload")
                                 || !hasRel))) {
-                    err("A \u201Clink\u201D element with an"
-                            + " \u201Cintegrity\u201D attribute must have a"
-                            + " \u201Crel\u201D attribute that contains the"
-                            + " value \u201Cstylesheet\u201D or the value"
-                            + " \u201Cpreload\u201D or the value"
-                            + " \u201Cmodulepreload\u201D.");
+                    err(String.format(
+                            Messages.getString("Assertions.Error.Root.Link.NoRelAttr.ManyVals"), //$NON-NLS-1$
+                            "integrity", "stylesheet", "preload", "modulepreload"));
                 }
                 if (atts.getIndex("", "sizes") > -1
                         && ((relList != null && !relList.contains("icon")
                                 && !relList.contains("apple-touch-icon"))
                                 && !relList.contains("apple-touch-icon-precomposed")
                                 || !hasRel)) {
-                    err("A \u201Clink\u201D element with a"
-                            + " \u201Csizes\u201D attribute must have a"
-                            + " \u201Crel\u201D attribute that contains the"
-                            + " value \u201Cicon\u201D or the value"
-                            + " \u201Capple-touch-icon\u201D or the value"
-                            + " \u201Capple-touch-icon-precomposed\u201D.");
+                    err(String.format(
+                            Messages.getString("Assertions.Error.Root.Link.NoRelAttr.ManyVals"), //$NON-NLS-1$
+                            "sizes", "icon", "apple-touch-icon", "apple-touch-icon-precomposed"));
                 }
                 if (atts.getIndex("", "color") > -1 //
                         && (!hasRel || (relList != null
                                 && !relList.contains("mask-icon")))) {
-                    err("A \u201Clink\u201D element with a"
-                            + " \u201Ccolor\u201D attribute must have a"
-                            + " \u201Crel\u201D attribute that contains"
-                            + " the value \u201Cmask-icon\u201D.");
+                    err(String.format(
+                            Messages.getString("Assertions.Error.Root.Link.NoRelAttr.Single"), //$NON-NLS-1$
+                            "color", "mask-icon"));
                 }
                 if (atts.getIndex("", "scope") > -1 //
                         && ((relList != null
                                 && !relList.contains("serviceworker"))
                                 || !hasRel)) {
-                    err("A \u201Clink\u201D element with a"
-                            + " \u201Cscope\u201D attribute must have a"
-                            + " \u201Crel\u201D attribute that contains the"
-                            + " value \u201Cserviceworker\u201D.");
+                    err(String.format(
+                            Messages.getString("Assertions.Error.Root.Link.NoRelAttr.Single"), //$NON-NLS-1$
+                            "scope", "serviceworker"));
                 }
                 if (atts.getIndex("", "updateviacache") > -1 //
                         && ((relList != null
                                 && !relList.contains("serviceworker"))
                                 || !hasRel)) {
-                    err("A \u201Clink\u201D element with an"
-                            + " \u201Cupdateviacache\u201D attribute must have a"
-                            + " \u201Crel\u201D attribute that contains the"
-                            + " value \u201Cserviceworker\u201D.");
+                    err(String.format(
+                            Messages.getString("Assertions.Error.Root.Link.NoRelAttr.Single"), //$NON-NLS-1$
+                            "updateviacache", "serviceworker"));
                 }
                 if (atts.getIndex("", "workertype") > -1 //
                         && ((relList != null
                                 && !relList.contains("serviceworker"))
                                 || !hasRel)) {
-                    err("A \u201Clink\u201D element with a"
-                            + " \u201Cworkertype\u201D attribute must have a"
-                            + " \u201Crel\u201D attribute that contains the"
-                            + " value \u201Cserviceworker\u201D.");
+                    err(String.format(
+                            Messages.getString("Assertions.Error.Root.Link.NoRelAttr.Single"), //$NON-NLS-1$
+                            "workertype", "serviceworker"));
                 }
                 if ((ancestorMask & BODY_MASK) != 0
                         && (relList != null
@@ -2869,31 +2691,19 @@ public class Assertions extends Checker {
                                         || relList.contains("stylesheet")))
                         && atts.getIndex("", "itemprop") < 0
                         && atts.getIndex("", "property") < 0) {
-                    err("A \u201Clink\u201D element must not appear"
-                            + " as a descendant of a \u201Cbody\u201D element"
-                            + " unless the \u201Clink\u201D element has an"
-                            + " \u201Citemprop\u201D attribute or has a"
-                            + " \u201Crel\u201D attribute whose value contains"
-                            + " \u201Cdns-prefetch\u201D,"
-                            + " \u201Cmodulepreload\u201D,"
-                            + " \u201Cpingback\u201D,"
-                            + " \u201Cpreconnect\u201D,"
-                            + " \u201Cprefetch\u201D,"
-                            + " \u201Cpreload\u201D,"
-                            + " \u201Cprerender\u201D, or"
-                            + " \u201Cstylesheet\u201D.");
+                    err(Messages.getString("Assertions.Error.Root.Link.UseInBodyElement")); //$NON-NLS-1$
                 }
             }
 
             // microdata
             if (itemid && !(itemscope && itemtype)) {
-                err("The \u201Citemid\u201D attribute must not be specified on elements that do not have both an \u201Citemscope\u201D attribute and an \u201Citemtype\u201D attribute specified.");
+                err(Messages.getString("Assertions.Error.Microdata.Itemid"));
             }
             if (itemref && !itemscope) {
-                err("The \u201Citemref\u201D attribute must not be specified on elements that do not have an \u201Citemscope\u201D attribute specified.");
+                err(String.format(Messages.getString("Assertions.Error.Microdata.NoItemscope"), "itemref")); //$NON-NLS-1$
             }
             if (itemtype && !itemscope) {
-                err("The \u201Citemtype\u201D attribute must not be specified on elements that do not have an \u201Citemscope\u201D attribute specified.");
+                err(String.format(Messages.getString("Assertions.Error.Microdata.NoItemscope"), "itemtype")); //$NON-NLS-1$
             }
 
             // Warnings for use of ARIA attributes with markup already
@@ -2901,22 +2711,25 @@ public class Assertions extends Checker {
             if (ELEMENTS_WITH_IMPLICIT_ROLE.containsKey(localName)
                     && ELEMENTS_WITH_IMPLICIT_ROLE.get(localName).equals(
                             role)) {
-                warn("The \u201C" + role + "\u201D role is unnecessary for"
-                        + " element" + " \u201C" + localName + "\u201D.");
+                warn(String.format(
+                        Messages.getString("Assertions.Warn.ARIA.UnnecessaryRole"), //$NON-NLS-1$
+                        role, localName));
             } else if (ELEMENTS_WITH_IMPLICIT_ROLES.containsKey(localName)
                     && role != null
                     && Arrays.binarySearch(
                             ELEMENTS_WITH_IMPLICIT_ROLES.get(localName),
                             role) >= 0) {
-                warn("The \u201C" + role + "\u201D role is unnecessary for"
-                        + " element" + " \u201C" + localName + "\u201D.");
+                warn(String.format(
+                        Messages.getString("Assertions.Warn.ARIA.UnnecessaryRole"), //$NON-NLS-1$
+                        role, localName));
             } else if (ELEMENTS_THAT_NEVER_NEED_ROLE.containsKey(localName)
                     && ELEMENTS_THAT_NEVER_NEED_ROLE.get(localName).equals(
                             role)) {
-                warn("Element \u201C" + localName + "\u201D does not need a"
-                        + " \u201Crole\u201D attribute.");
             } else if ("input" == localName) {
                 inputTypeVal = inputTypeVal == null ? "text" : inputTypeVal;
+                warn(String.format(
+                        Messages.getString("Assertions.Warn.ARIA.NeverNeedRoleAttr"), //$NON-NLS-1$
+                        localName));
                 if (INPUT_TYPES_WITH_IMPLICIT_ROLE.containsKey(inputTypeVal)
                         && INPUT_TYPES_WITH_IMPLICIT_ROLE.get(
                                 inputTypeVal).equals(role)) {
@@ -2929,19 +2742,15 @@ public class Assertions extends Checker {
                         || "url".equals(inputTypeVal)) {
                     if (atts.getIndex("", "list") < 0) {
                         if ("textbox".equals(role)) {
-                            warn("The \u201Ctextbox\u201D role is unnecessary"
-                                    + " for an \u201Cinput\u201D element that"
-                                    + " has no \u201Clist\u201D attribute and"
-                                    + " whose type is" + " \u201C"
-                                    + inputTypeVal + "\u201D.");
+                            warn(String.format(
+                                    Messages.getString("Assertions.Warn.ARIA.UnnecessaryTextboxRole"), //$NON-NLS-1$
+                                    inputTypeVal));
                         }
                     } else {
                         if ("combobox".equals(role)) {
-                            warn("The \u201Ccombobox\u201D role is unnecessary"
-                                    + " for an \u201Cinput\u201D element that"
-                                    + " has a \u201Clist\u201D attribute and"
-                                    + " whose type is" + " \u201C"
-                                    + inputTypeVal + "\u201D.");
+                            warn(String.format(
+                                    Messages.getString("Assertions.Warn.ARIA.UnnecessaryComboboxRole"), //$NON-NLS-1$
+                                    inputTypeVal));
                         }
 
                     }
@@ -2949,36 +2758,25 @@ public class Assertions extends Checker {
             } else if (atts.getIndex("", "href") > -1 && "link".equals(role)
                     && ("a".equals(localName) || "area".equals(localName)
                             || "link".equals(localName))) {
-                warn("The \u201Clink\u201D role is unnecessary for element"
-                        + " \u201C" + localName + "\u201D with attribute"
-                        + " \u201Chref\u201D.");
+                warn(String.format(Messages.getString("Assertions.Warn.ARIA.UnnecessaryLinkRole"), localName)); //$NON-NLS-1$
             } else if (("tbody".equals(localName) || "tfoot".equals(localName)
                     || "thead".equals(localName)) && "rowgroup".equals(role)) {
-                warn("The \u201Crowgroup\u201D role is unnecessary for element"
-                        + " \u201C" + localName + "\u201D.");
+                warn(String.format(Messages.getString("Assertions.Warn.ARIA.UnnecessaryRole"), "rowgroup", localName)); //$NON-NLS-1$
             } else if ("th" == localName && ("columnheader".equals(role)
                     || "columnheader".equals(role))) {
-                warn("The \u201C" + role + "\u201D role is unnecessary for"
-                        + " element \u201Cth\u201D.");
+                warn(String.format(Messages.getString("Assertions.Warn.ARIA.UnnecessaryRole"), role, "th")); //$NON-NLS-1$
             } else if ("li" == localName && "listitem".equals(role)
                     && !"menu".equals(parentName)) {
-                warn("The \u201Clistitem\u201D role is unnecessary for an"
-                        + " \u201Cli\u201D element whose parent is"
-                        + " an \u201Col\u201D element or a"
-                        + " \u201Cul\u201D element.");
+                warn(Messages.getString("Assertions.Warn.ARIA.UnnecessaryListitemRole")); //$NON-NLS-1$
             } else if ("button" == localName && "button".equals(role)
                     && "menu".equals(atts.getValue("", "type"))) {
                 warnExplicitRoleUnnecessaryForType("button", "button", "menu");
             } else if ("menu" == localName && "toolbar".equals(role)
                     && "toolbar".equals(atts.getValue("", "type"))) {
-                warnExplicitRoleUnnecessaryForType("menu", "toolbar",
-                        "toolbar");
+                warnExplicitRoleUnnecessaryForType("menu", "toolbar", "toolbar");
             } else if ("li" == localName && "listitem".equals(role)
                     && !"menu".equals(parentName)) {
-                warn("The \u201Clistitem\u201D role is unnecessary for an"
-                        + " \u201Cli\u201D element whose parent is"
-                        + " an \u201Col\u201D element or a"
-                        + " \u201Cul\u201D element.");
+                warn(Messages.getString("Assertions.Warn.ARIA.UnnecessaryListitemRole")); //$NON-NLS-1$
             }
         } else {
             int len = atts.getLength();
@@ -3036,9 +2834,7 @@ public class Assertions extends Checker {
         allIds.addAll(ids);
 
         if (isAriaLabelMisuse(ariaLabel, localName, role, atts)) {
-            warn("Possible misuse of \u201Caria-label\u201D. (If you disagree"
-                    + " with this warning, file an issue report or send e-mail"
-                    + " to www-validator@w3.org.)");
+            warn(Messages.getString("Assertions.Warn.AriaLabel.Misuse")); //$NON-NLS-1$
             incrementUseCounter("aria-label-misuse-found");
             String systemId = getDocumentLocator().getSystemId();
             if (systemId != null && hasPageEmitterInCallStack()) {
@@ -3129,8 +2925,7 @@ public class Assertions extends Checker {
             }
             if (localName.contains("-")) {
                 if (atts.getIndex("", "is") > -1) {
-                    err("Autonomous custom elements must not specify the"
-                            + " \u201cis\u201d attribute.");
+                    err(Messages.getString("Assertions.Error.Element.AutonomousCustom.SpecityISAttr")); //$NON-NLS-1$
                 }
                 try {
                     CustomElementName.THE_INSTANCE.checkValid(localName);
@@ -3164,9 +2959,9 @@ public class Assertions extends Checker {
              * allowing those elements in our RelaxNG schema, Jing on its own
              * won't emit any error for them).
              */
-            err("Element \u201c" + localName + "\u201d from namespace"
-                    + " \u201chttp://n.validator.nu/custom-elements/\u201d"
-                    + " not allowed.");
+            err(String.format(
+                    Messages.getString("Assertions.Error.Element.Custom.NotAllow"), //$NON-NLS-1$
+                    localName));
         } else {
             StackNode child = new StackNode(ancestorMask, null, role,
                     activeDescendant, forAttr);
