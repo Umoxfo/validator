@@ -1,0 +1,14 @@
+rootProject.name = 'validator'
+include 'css-validator', 'langdetect', 'galimatias', 'htmlparser'
+
+file('jing-trang/mod').eachDir { dir ->
+    def module = ":jing-trang:${dir.name}"
+    include module
+    project(module).projectDir = dir
+}
+
+//includeBuild('jing-trang') {
+//    dependencySubstitution {
+//        substitute module('com.thaiopensource:jing') with project(':jing')
+//    }
+//}

@@ -1,0 +1,427 @@
+import javax.xml.transform.TransformerFactory
+import javax.xml.transform.stream.StreamResult
+import javax.xml.transform.stream.StreamSource
+
+ext.dependencyVersions = [
+    saxon: '9.1.0.8',
+    xalan: '2.7.2',
+    isorelax: '20041111',
+    isorelaxLib: "${project(':jing-trang').projectDir}/lib/isorelax.jar",
+
+    // Dependencies of the rng-parse module
+    javacc: '7.0.4',
+]
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java-library'
+
+    buildDir = "${project(':jing-trang').projectDir}/build/mod/${project.name}"
+
+    sourceSets {
+        main {
+            java.srcDirs = ['src/main']
+            resources.srcDir 'src/resources'
+        }
+    }
+
+    tasks.withType(Jar) {
+        afterEvaluate {
+            from project.dependentProjects.collect { it.sourceSets.main.output }.flatten()
+            from project.sourceSets.main.output
+        }
+    }
+}
+
+project(':') {
+    description 'Schema validation and conversion based on RELAX NG'
+}
+
+project(':jing-trang:convert-from-dtd') {
+    ext.dependentProjects = [project(':jing-trang:util'),
+                             project(':jing-trang:dtd-parse'),
+                             project(':jing-trang:rng-parse'),
+                             project(':jing-trang:rng-schema')]
+
+    dependencies {
+        implementation dependentProjects
+    }
+}
+
+project(':jing-trang:convert-from-xml') {
+    ext.dependentProjects = [project(':jing-trang:util'),
+                             project(':jing-trang:infer'),
+                             project(':jing-trang:datatype'),
+                             project(':jing-trang:rng-parse'),
+                             project(':jing-trang:rng-schema')]
+
+    dependencies {
+        implementation dependentProjects
+    }
+}
+
+project(':jing-trang:convert-to-dtd') {
+    ext.dependentProjects = [project(':jing-trang:util'),
+                             project(':jing-trang:rng-parse'),
+                             project(':jing-trang:rng-schema')]
+
+    dependencies {
+        implementation dependentProjects
+    }
+}
+
+project(':jing-trang:convert-to-xsd') {
+    ext.dependentProjects =[project(':jing-trang:util'),
+                            project(':jing-trang:datatype'),
+                            project(':jing-trang:rng-parse'),
+                            project(':jing-trang:rng-schema')]
+
+    dependencies {
+        implementation dependentProjects
+    }
+}
+
+project(':jing-trang:datatype') {
+    ext.dependentProjects = [project(':jing-trang:util')]
+
+    dependencies {
+        implementation dependentProjects
+    }
+}
+
+project(':jing-trang:dtd-parse') {
+    ext.dependentProjects = [project(':jing-trang:util')]
+
+    dependencies {
+        implementation dependentProjects
+    }
+}
+
+project(':jing-trang:dtdinst') {
+    ext.dependentProjects = [project(':jing-trang:util'),
+                             project(':jing-trang:dtd-parse')]
+
+    dependencies {
+        implementation dependentProjects
+    }
+
+    tasks.withType(Jar) {
+        manifest {
+            attributes 'Main-Class': 'com.thaiopensource.xml.dtd.app.Driver'
+        }
+
+        destinationDirectory.set file("${parent.buildDir}/${libsDirName}")
+    }
+}
+
+project(':jing-trang:infer') {
+    ext.dependentProjects = [project(':jing-trang:util'),
+                             project(':jing-trang:datatype')]
+
+    dependencies {
+        implementation dependentProjects
+    }
+}
+
+project(':jing-trang:jing') {
+    ext.dependentProjects = [project(':jing-trang:util'),
+                             project(':jing-trang:regex'),
+                             project(':jing-trang:datatype'),
+                             project(':jing-trang:xsd-datatype'),
+                             project(':jing-trang:validate'),
+                             project(':jing-trang:rng-parse'),
+                             project(':jing-trang:rng-validate'),
+                             project(':jing-trang:nvdl'),
+                             project(':jing-trang:schematron'),
+                             project(':jing-trang:picl')]
+
+    dependencies {
+        implementation dependentProjects
+    }
+
+//    task list {
+//        println dependentProjects.collect { it.sourceSets.main.output.files }.flatten().join('\n')
+//    }
+
+    tasks.withType(Jar) {
+        manifest {
+            attributes 'Main-Class': 'com.thaiopensource.relaxng.util.Driver'
+            attributes 'Class-Path': 'saxon9.jar xalan.jar isorelax.jar'
+        }
+
+        metaInf {
+            doLast {
+                from sourceSets.main.output.resourcesDir
+            }
+        }
+
+        destinationDirectory.set file("${parent.buildDir}/${libsDirName}")
+    }
+}
+
+project(':jing-trang:nvdl') {
+    ext.dependentProjects = [project(':jing-trang:util'),
+                             project(':jing-trang:validate'),
+                             project(':jing-trang:rng-validate')]
+
+    dependencies {
+        implementation dependentProjects
+    }
+}
+
+project(':jing-trang:picl') {
+    ext.dependentProjects = [project(':jing-trang:util'),
+                             project(':jing-trang:validate'),
+                             project(':jing-trang:rng-validate')]
+
+    dependencies {
+        implementation dependentProjects
+    }
+}
+
+project(':jing-trang:regex') {
+    ext.dependentProjects = [project(':jing-trang:util')]
+
+    dependencies {
+        implementation dependentProjects
+    }
+
+    final def genSrcDir = "${buildDir}/generated/sources/javacc/main/java"
+    sourceSets.main {
+        output.dir(genSrcDir, buildBy: 'regex.gen')
+    }
+
+    ext.generateSource = { genClassName, generatedSourceName, resources = '' ->
+        def regexGenClasspath = project(':jing-trang:regex-gen').sourceSets.main.output.classesDirs
+        def utilClasspath = project(':jing-trang:util').sourceSets.main.output.classesDirs
+
+        javaexec {
+            classpath regexGenClasspath, utilClasspath
+            main = "com.thaiopensource.datatype.xsd.regex.java.gen.${genClassName}"
+            args "com.thaiopensource.datatype.xsd.regex.java.${generatedSourceName}",
+                 genSrcDir, resources
+        }
+    }
+
+    final def packageDir = "${genSrcDir}/com/thaiopensource/datatype/xsd/regex/java"
+
+    task 'regex.checkGen'(dependsOn: ':jing-trang:regex-gen:compileJava') {
+        doLast {
+            def targetFile = "${packageDir}/Categories.java"
+
+            ant.uptodate(property: 'regex.gen-ok', targetfile: targetFile) {
+                srcfiles(dir: project(':jing-trang:regex-gen').sourceSets.main.output.classesDirs.first(),
+                         includes: '**/*.class')
+            }
+
+            tasks['regex.gen'].onlyIf { ant.properties['regex.gen-ok'] == null }
+        }
+    }
+
+    task 'regex.gen'(dependsOn: 'regex.checkGen') {
+        doLast {
+            file(packageDir).mkdirs()
+
+            generateSource('NamingExceptionsGen', 'NamingExceptions')
+
+            generateSource('CategoriesGen', 'Categories',
+                           "${parent.projectDir}/lib/UnicodeData-3.1.0.txt")
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        dependsOn 'regex.gen'
+
+        source genSrcDir
+    }
+
+    tasks.withType(Jar) {
+        metaInf {
+            from sourceSets.main.output.resourcesDir
+        }
+    }
+}
+
+project(':jing-trang:regex-gen') {
+    ext.dependentProjects = [project(':jing-trang:util')]
+
+    dependencies {
+        implementation dependentProjects
+    }
+}
+
+project(':jing-trang:rng-parse') {
+    apply plugin: 'com.intershop.gradle.javacc'
+
+    ext.dependentProjects = [project(':jing-trang:util'),
+                             project(':jing-trang:datatype')]
+
+    dependencies {
+        implementation dependentProjects
+    }
+
+    final def genSrcDir = "${buildDir}/generated/sources/javacc/main/java"
+    sourceSets.main {
+        output.dir(genSrcDir, buildBy: 'rng-parse.gen')
+    }
+
+    task 'rng-parse.gen' {
+        def packageDir = "${genSrcDir}/com/thaiopensource/relaxng/parse/compact"
+        file(packageDir).mkdirs()
+
+        javacc {
+            javaCCVersion = dependencyVersions.javacc
+            configs {
+                compactSyntax {
+                    // For future migration to directory structure of "src/main/java"
+                    inputFile = files(sourceSets.main.java.srcDirs).asFileTree.find { it.name == 'CompactSyntax.jj' }
+                    outputDir = file(genSrcDir)
+                    packageName = 'com.thaiopensource.relaxng.parse.compact'
+                }
+            }
+        }
+
+        doLast {
+            delete "${packageDir}/JavaCharStream.java"
+
+//            def file = file("${packageDir}/CompactSyntaxTokenManager.java")
+//            file.write(file.text.replaceAll('java.io.IOException', 'EOFException'), 'UTF-8')
+
+            ant.replace(file: "${packageDir}/CompactSyntaxTokenManager.java",
+                        token: 'java.io.IOException',
+                        value: 'EOFException')
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        dependsOn 'rng-parse.gen'
+    }
+}
+
+project(':jing-trang:rng-schema') {
+    ext.dependentProjects = [project(':jing-trang:util'),
+                             project(':jing-trang:datatype'),
+                             project(':jing-trang:rng-parse')]
+
+    dependencies {
+        implementation dependentProjects
+    }
+}
+
+project(':jing-trang:rng-validate') {
+    ext.dependentProjects = [project(':jing-trang:util'),
+                             project(':jing-trang:datatype'),
+                             project(':jing-trang:validate'),
+                             project(':jing-trang:rng-parse')]
+
+    dependencies {
+        implementation dependentProjects
+
+        implementation files(dependencyVersions.isorelaxLib)
+    }
+
+    sourceSets.main.java.exclude '**/JingTask.java'
+}
+
+project(':jing-trang:schematron') {
+    ext.dependentProjects = [project(':jing-trang:util'),
+                             project(':jing-trang:validate'),
+                             project(':jing-trang:rng-validate')]
+
+    dependencies {
+        implementation dependentProjects
+
+        implementation "xalan:xalan:${dependencyVersions.xalan}"
+        implementation "net.sourceforge.saxon:saxon:${dependencyVersions.saxon}"
+    }
+
+    task 'compileResource' {
+        def resPackage = 'com/thaiopensource/validate/schematron/resources'
+        def resDir = "${sourceSets.main.output.resourcesDir}/${resPackage}"
+
+        file(resDir).mkdirs()
+
+        // Load xslt
+        def xslt = file('lib/xsltc-fixup.xsl').newInputStream()
+
+        // Create transformer
+        def transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xslt))
+
+        // Load schematron.xsl
+        def xsl = files(sourceSets.main.java.srcDirs).asFileTree.find { it.name == 'schematron.xsl' }.newInputStream()
+
+        // Set output file
+        def outXsl = file("${resDir}/schematron-xsltc.xsl").newOutputStream()
+
+        // Perform transformation
+        transformer.transform(new StreamSource(xsl), new StreamResult(outXsl))
+    }
+
+    tasks.withType(JavaCompile) {
+        dependsOn 'compileResource'
+    }
+}
+
+project(':jing-trang:trang') {
+    ext.dependentProjects = [project(':jing-trang:util'),
+                             project(':jing-trang:regex'),
+                             project(':jing-trang:datatype'),
+                             project(':jing-trang:xsd-datatype'),
+                             project(':jing-trang:rng-parse'),
+                             project(':jing-trang:dtd-parse'),
+                             project(':jing-trang:infer'),
+                             project(':jing-trang:rng-schema'),
+                             project(':jing-trang:convert-from-xml'),
+                             project(':jing-trang:convert-to-xsd'),
+                             project(':jing-trang:convert-from-dtd'),
+                             project(':jing-trang:convert-to-dtd')]
+
+    dependencies {
+        implementation dependentProjects
+
+        implementation "xalan:xalan:${dependencyVersions.xalan}"
+        implementation "net.sourceforge.saxon:saxon:${dependencyVersions.saxon}"
+    }
+
+    tasks.withType(Jar) {
+        manifest {
+            attributes 'Main-Class': 'com.thaiopensource.relaxng.translate.Driver'
+        }
+
+        metaInf {
+            doLast {
+                from sourceSets.main.output.resourcesDir
+            }
+        }
+
+        destinationDirectory.set file("${parent.buildDir}/${libsDirName}")
+    }
+}
+
+project(':jing-trang:util') { ext.dependentProjects = [] }
+
+project(':jing-trang:validate') {
+    ext.dependentProjects = [project(':jing-trang:util'),
+                             project(':jing-trang:datatype')]
+
+    dependencies {
+        implementation dependentProjects
+
+        implementation files(dependencyVersions.isorelaxLib)
+    }
+}
+
+project(':jing-trang:xsd-datatype') {
+    ext.dependentProjects = [project(':jing-trang:util'),
+                             project(':jing-trang:datatype'),
+                             project(':jing-trang:regex')]
+
+    dependencies {
+        implementation dependentProjects
+    }
+}

@@ -1,0 +1,6 @@
+rootProject.name = 'jing-trang'
+
+file('mod').eachDir { dir ->
+    include dir.name
+    project(":${dir.name}").projectDir = dir
+}
