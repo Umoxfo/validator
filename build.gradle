@@ -14,6 +14,7 @@ allprojects {
     apply plugin: 'idea'
 
     repositories {
+        flatDir { dirs file('jing-trang/lib') }
         jcenter()
     }
 

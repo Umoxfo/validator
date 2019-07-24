@@ -205,7 +205,7 @@ project(':jing-trang:rng-validate') {
     dependencies {
         implementation dependentProjects
 
-        implementation files(dependencyVersions.isorelaxLib)
+        implementation ':isorelax'
     }
 
     sourceSets.main.java.exclude '**/JingTask.java'
@@ -259,7 +259,7 @@ project(':jing-trang:validate') {
     dependencies {
         implementation dependentProjects
 
-        implementation files(dependencyVersions.isorelaxLib)
+        implementation ':isorelax'
     }
 }
 
