@@ -429,6 +429,53 @@ task downloadLocalEntities {
     }
 }
 
+// No7
+task buildSchemaDrivers {
+    def html5Dir = 'schema/html5'
+    ['HtmlCore', 'Html5NoMicrodata', 'Html5', 'Html5RDFa', 'Html5RDFaLite',
+     'XhtmlCore', 'XhtmlCorePlusWf2', 'Xhtml5htmlNoMicrodata',
+     'Xhtml5xhtmlNoMicrodata', 'Xhtml5html', 'Xhtml5xhtml', 'Xhtml5xhtmlRDFa',
+     'Xhtml5htmlRDFaLite', 'Xhtml5xhtmlRDFaLite'].each {
+        def driverName = schemaDrivers[it].driverName
+        def sourceName = schemaDrivers[it].sourceName
+        def driver = schemaDrivers[it].driver
+
+        openDriver(html5Dir, driverName, sourceName)
+            .withWriterAppend('UTF-8') { writer -> writer << driver }
+    }
+
+    def driversDir = 'schema/.drivers'
+    copy {
+        def drivers = SchemaDriverConfig.CoreSchemaDriverFiles + 'xhtml10'
+
+        doLast {
+            println drivers.collect { fileName ->
+                "Copying ${driversDir}/${fileName} to schema/${fileName}"
+            }.join('\n')
+        }
+
+        from(driversDir) {
+            include SchemaDriverConfig.CoreSchemaDriverFiles
+            include 'xhtml10/'
+        }
+        into 'schema'
+    }
+
+    copy {
+        doLast {
+            println "Copying ${driversDir}/rdf.rnc to schema/rdf/rdf.rnc"
+        }
+
+        from file("${driversDir}/rdf.rnc")
+        into 'schema/rdf'
+    }
+
+    copy {
+        from files("${driversDir}/legacy.rnc", "its2/its20-html5.rnc", "its2/its20-html5-types.rnc")
+        into html5Dir
+    }
+}
+
 task preparePropertiesFile(type: Copy) {
     group = 'prepareLocalEntityJar'
 
@@ -504,54 +551,8 @@ task deleteSchema(type: Delete) {
 
 // No9
 task prepareLocalEntityJar {
+    mustRunAfter buildSchemaDrivers
     dependsOn preparePropertiesFile, copyLocalEntities, updateEntitymap, deleteSchema
-}
-
-// No7
-task buildSchemaDrivers {
-    def html5Dir = 'schema/html5'
-    ['HtmlCore', 'Html5NoMicrodata', 'Html5', 'Html5RDFa', 'Html5RDFaLite',
-     'XhtmlCore', 'XhtmlCorePlusWf2', 'Xhtml5htmlNoMicrodata',
-     'Xhtml5xhtmlNoMicrodata', 'Xhtml5html', 'Xhtml5xhtml', 'Xhtml5xhtmlRDFa',
-     'Xhtml5htmlRDFaLite', 'Xhtml5xhtmlRDFaLite'].each {
-        def driverName = schemaDrivers[it].driverName
-        def sourceName = schemaDrivers[it].sourceName
-        def driver = schemaDrivers[it].driver
-
-        openDriver(html5Dir, driverName, sourceName)
-            .withWriterAppend('UTF-8') { writer -> writer << driver }
-    }
-
-    def driversDir = 'schema/.drivers'
-    copy {
-        def drivers = SchemaDriverConfig.CoreSchemaDriverFiles + 'xhtml10'
-
-        doLast {
-            println drivers.collect { fileName ->
-                "Copying ${driversDir}/${fileName} to schema/${fileName}"
-            }.join('\n')
-        }
-
-        from(driversDir) {
-            include SchemaDriverConfig.CoreSchemaDriverFiles
-            include 'xhtml10/'
-        }
-        into 'schema'
-    }
-
-    copy {
-        doLast {
-            println "Copying ${driversDir}/rdf.rnc to schema/rdf/rdf.rnc"
-        }
-
-        from file("${driversDir}/rdf.rnc")
-        into 'schema/rdf'
-    }
-
-    copy {
-        from files("${driversDir}/legacy.rnc", "its2/its20-html5.rnc", "its2/its20-html5-types.rnc")
-        into html5Dir
-    }
 }
 
 def vnuSrc = 'src/nu/validator'
@@ -659,10 +660,10 @@ class Release {
         tasks[':jing-trang:jing:classes']
 
         // No7
-        buildSchemaDrivers()
+        buildSchemaDrivers
 
         // No8
-        prepareLocalEntityJar()
+        prepareLocalEntityJar
 
         // No9
         // buildLangdetect
