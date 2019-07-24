@@ -2,172 +2,74 @@ import javax.xml.transform.TransformerFactory
 import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.stream.StreamSource
 
-ext.dependencyVersions = [
-    saxon: '9.1.0.8',
-    xalan: '2.7.2',
-    isorelax: '20041111',
-    isorelaxLib: "${project(':jing-trang').projectDir}/lib/isorelax.jar",
-
-    // Dependencies of the rng-parse module
-    javacc: '7.0.4',
-]
-
-allprojects {
-    repositories {
-        mavenCentral()
-    }
-}
-
 subprojects {
-    apply plugin: 'java-library'
+    ext.dependentProjects = []
 
     buildDir = "${project(':jing-trang').projectDir}/build/mod/${project.name}"
 
-    sourceSets {
-        main {
-            java.srcDirs = ['src/main']
-            resources.srcDir 'src/resources'
-        }
+    sourceSets.main {
+        java.srcDirs = ['src/main']
+
+        resources.srcDir 'src/resources'
     }
 
     tasks.withType(Jar) {
         afterEvaluate {
-            from project.dependentProjects.collect { it.sourceSets.main.output }.flatten()
+            from project.dependentProjects.collect { it.sourceSets.main.output.files }.flatten()
             from project.sourceSets.main.output
+
+            duplicatesStrategy = 'exclude'
         }
     }
 }
 
-project(':') {
+configure(allprojects.findAll { it.name != 'jing'}) {
+    project.tasks.withType(Jar) { enabled = false }
+}
+
+project(':jing-trang') {
     description 'Schema validation and conversion based on RELAX NG'
-}
-
-project(':jing-trang:convert-from-dtd') {
-    ext.dependentProjects = [project(':jing-trang:util'),
-                             project(':jing-trang:dtd-parse'),
-                             project(':jing-trang:rng-parse'),
-                             project(':jing-trang:rng-schema')]
-
-    dependencies {
-        implementation dependentProjects
-    }
-}
-
-project(':jing-trang:convert-from-xml') {
-    ext.dependentProjects = [project(':jing-trang:util'),
-                             project(':jing-trang:infer'),
-                             project(':jing-trang:datatype'),
-                             project(':jing-trang:rng-parse'),
-                             project(':jing-trang:rng-schema')]
-
-    dependencies {
-        implementation dependentProjects
-    }
-}
-
-project(':jing-trang:convert-to-dtd') {
-    ext.dependentProjects = [project(':jing-trang:util'),
-                             project(':jing-trang:rng-parse'),
-                             project(':jing-trang:rng-schema')]
-
-    dependencies {
-        implementation dependentProjects
-    }
-}
-
-project(':jing-trang:convert-to-xsd') {
-    ext.dependentProjects =[project(':jing-trang:util'),
-                            project(':jing-trang:datatype'),
-                            project(':jing-trang:rng-parse'),
-                            project(':jing-trang:rng-schema')]
-
-    dependencies {
-        implementation dependentProjects
-    }
-}
-
-project(':jing-trang:datatype') {
-    ext.dependentProjects = [project(':jing-trang:util')]
-
-    dependencies {
-        implementation dependentProjects
-    }
-}
-
-project(':jing-trang:dtd-parse') {
-    ext.dependentProjects = [project(':jing-trang:util')]
-
-    dependencies {
-        implementation dependentProjects
-    }
-}
-
-project(':jing-trang:dtdinst') {
-    ext.dependentProjects = [project(':jing-trang:util'),
-                             project(':jing-trang:dtd-parse')]
-
-    dependencies {
-        implementation dependentProjects
-    }
-
-    tasks.withType(Jar) {
-        manifest {
-            attributes 'Main-Class': 'com.thaiopensource.xml.dtd.app.Driver'
-        }
-
-        destinationDirectory.set file("${parent.buildDir}/${libsDirName}")
-    }
-}
-
-project(':jing-trang:infer') {
-    ext.dependentProjects = [project(':jing-trang:util'),
-                             project(':jing-trang:datatype')]
-
-    dependencies {
-        implementation dependentProjects
-    }
+    version = projectVersions.jing
 }
 
 project(':jing-trang:jing') {
-    ext.dependentProjects = [project(':jing-trang:util'),
-                             project(':jing-trang:regex'),
-                             project(':jing-trang:datatype'),
-                             project(':jing-trang:xsd-datatype'),
-                             project(':jing-trang:validate'),
-                             project(':jing-trang:rng-parse'),
-                             project(':jing-trang:rng-validate'),
-                             project(':jing-trang:nvdl'),
-                             project(':jing-trang:schematron'),
-                             project(':jing-trang:picl')]
+    dependentProjects = [project(':jing-trang:util'),
+                         project(':jing-trang:regex'),
+                         project(':jing-trang:datatype'),
+                         project(':jing-trang:xsd-datatype'),
+                         project(':jing-trang:validate'),
+                         project(':jing-trang:rng-parse'),
+                         project(':jing-trang:rng-validate'),
+                         project(':jing-trang:nvdl'),
+                         project(':jing-trang:schematron'),
+                         project(':jing-trang:picl')]
 
     dependencies {
         implementation dependentProjects
     }
-
-//    task list {
-//        println dependentProjects.collect { it.sourceSets.main.output.files }.flatten().join('\n')
-//    }
 
     tasks.withType(Jar) {
         manifest {
             attributes 'Main-Class': 'com.thaiopensource.relaxng.util.Driver'
-            attributes 'Class-Path': 'saxon9.jar xalan.jar isorelax.jar'
-        }
-
-        metaInf {
-            doLast {
-                from sourceSets.main.output.resourcesDir
-            }
+            attributes 'Class-Path': 'saxon9.jar isorelax.jar'
         }
 
         destinationDirectory.set file("${parent.buildDir}/${libsDirName}")
     }
 }
 
+project(':jing-trang:datatype') {
+    dependentProjects = [project(':jing-trang:util')]
+
+    dependencies {
+        implementation dependentProjects
+    }
+}
+
 project(':jing-trang:nvdl') {
-    ext.dependentProjects = [project(':jing-trang:util'),
-                             project(':jing-trang:validate'),
-                             project(':jing-trang:rng-validate')]
+    dependentProjects = [project(':jing-trang:util'),
+                         project(':jing-trang:validate'),
+                         project(':jing-trang:rng-validate')]
 
     dependencies {
         implementation dependentProjects
@@ -175,9 +77,9 @@ project(':jing-trang:nvdl') {
 }
 
 project(':jing-trang:picl') {
-    ext.dependentProjects = [project(':jing-trang:util'),
-                             project(':jing-trang:validate'),
-                             project(':jing-trang:rng-validate')]
+    dependentProjects = [project(':jing-trang:util'),
+                         project(':jing-trang:validate'),
+                         project(':jing-trang:rng-validate')]
 
     dependencies {
         implementation dependentProjects
@@ -185,16 +87,13 @@ project(':jing-trang:picl') {
 }
 
 project(':jing-trang:regex') {
-    ext.dependentProjects = [project(':jing-trang:util')]
+    dependentProjects = [project(':jing-trang:util')]
 
     dependencies {
         implementation dependentProjects
     }
 
     final def genSrcDir = "${buildDir}/generated/sources/javacc/main/java"
-    sourceSets.main {
-        output.dir(genSrcDir, buildBy: 'regex.gen')
-    }
 
     ext.generateSource = { genClassName, generatedSourceName, resources = '' ->
         def regexGenClasspath = project(':jing-trang:regex-gen').sourceSets.main.output.classesDirs
@@ -248,7 +147,7 @@ project(':jing-trang:regex') {
 }
 
 project(':jing-trang:regex-gen') {
-    ext.dependentProjects = [project(':jing-trang:util')]
+    dependentProjects = [project(':jing-trang:util')]
 
     dependencies {
         implementation dependentProjects
@@ -258,24 +157,22 @@ project(':jing-trang:regex-gen') {
 project(':jing-trang:rng-parse') {
     apply plugin: 'com.intershop.gradle.javacc'
 
-    ext.dependentProjects = [project(':jing-trang:util'),
-                             project(':jing-trang:datatype')]
+    dependentProjects = [project(':jing-trang:util'),
+                         project(':jing-trang:datatype')]
 
     dependencies {
         implementation dependentProjects
     }
 
     final def genSrcDir = "${buildDir}/generated/sources/javacc/main/java"
-    sourceSets.main {
-        output.dir(genSrcDir, buildBy: 'rng-parse.gen')
-    }
+    sourceSets.main.java.srcDir genSrcDir
 
     task 'rng-parse.gen' {
         def packageDir = "${genSrcDir}/com/thaiopensource/relaxng/parse/compact"
         file(packageDir).mkdirs()
 
         javacc {
-            javaCCVersion = dependencyVersions.javacc
+            javaCCVersion = '7.0.4'
             configs {
                 compactSyntax {
                     // For future migration to directory structure of "src/main/java"
@@ -289,12 +186,8 @@ project(':jing-trang:rng-parse') {
         doLast {
             delete "${packageDir}/JavaCharStream.java"
 
-//            def file = file("${packageDir}/CompactSyntaxTokenManager.java")
-//            file.write(file.text.replaceAll('java.io.IOException', 'EOFException'), 'UTF-8')
-
-            ant.replace(file: "${packageDir}/CompactSyntaxTokenManager.java",
-                        token: 'java.io.IOException',
-                        value: 'EOFException')
+            def file = file("${packageDir}/CompactSyntaxTokenManager.java")
+            file.write(file.text.replaceAll('java.io.IOException', 'EOFException'), 'UTF-8')
         }
     }
 
@@ -303,21 +196,11 @@ project(':jing-trang:rng-parse') {
     }
 }
 
-project(':jing-trang:rng-schema') {
-    ext.dependentProjects = [project(':jing-trang:util'),
-                             project(':jing-trang:datatype'),
-                             project(':jing-trang:rng-parse')]
-
-    dependencies {
-        implementation dependentProjects
-    }
-}
-
 project(':jing-trang:rng-validate') {
-    ext.dependentProjects = [project(':jing-trang:util'),
-                             project(':jing-trang:datatype'),
-                             project(':jing-trang:validate'),
-                             project(':jing-trang:rng-parse')]
+    dependentProjects = [project(':jing-trang:util'),
+                         project(':jing-trang:datatype'),
+                         project(':jing-trang:validate'),
+                         project(':jing-trang:rng-parse')]
 
     dependencies {
         implementation dependentProjects
@@ -329,14 +212,14 @@ project(':jing-trang:rng-validate') {
 }
 
 project(':jing-trang:schematron') {
-    ext.dependentProjects = [project(':jing-trang:util'),
-                             project(':jing-trang:validate'),
-                             project(':jing-trang:rng-validate')]
+    dependentProjects = [project(':jing-trang:util'),
+                         project(':jing-trang:validate'),
+                         project(':jing-trang:rng-validate')]
 
     dependencies {
         implementation dependentProjects
 
-        implementation "xalan:xalan:${dependencyVersions.xalan}"
+//        implementation "xalan:xalan:${dependencyVersions.xalan}"
         implementation "net.sourceforge.saxon:saxon:${dependencyVersions.saxon}"
     }
 
@@ -367,47 +250,11 @@ project(':jing-trang:schematron') {
     }
 }
 
-project(':jing-trang:trang') {
-    ext.dependentProjects = [project(':jing-trang:util'),
-                             project(':jing-trang:regex'),
-                             project(':jing-trang:datatype'),
-                             project(':jing-trang:xsd-datatype'),
-                             project(':jing-trang:rng-parse'),
-                             project(':jing-trang:dtd-parse'),
-                             project(':jing-trang:infer'),
-                             project(':jing-trang:rng-schema'),
-                             project(':jing-trang:convert-from-xml'),
-                             project(':jing-trang:convert-to-xsd'),
-                             project(':jing-trang:convert-from-dtd'),
-                             project(':jing-trang:convert-to-dtd')]
-
-    dependencies {
-        implementation dependentProjects
-
-        implementation "xalan:xalan:${dependencyVersions.xalan}"
-        implementation "net.sourceforge.saxon:saxon:${dependencyVersions.saxon}"
-    }
-
-    tasks.withType(Jar) {
-        manifest {
-            attributes 'Main-Class': 'com.thaiopensource.relaxng.translate.Driver'
-        }
-
-        metaInf {
-            doLast {
-                from sourceSets.main.output.resourcesDir
-            }
-        }
-
-        destinationDirectory.set file("${parent.buildDir}/${libsDirName}")
-    }
-}
-
-project(':jing-trang:util') { ext.dependentProjects = [] }
+project(':jing-trang:util')
 
 project(':jing-trang:validate') {
-    ext.dependentProjects = [project(':jing-trang:util'),
-                             project(':jing-trang:datatype')]
+    dependentProjects = [project(':jing-trang:util'),
+                         project(':jing-trang:datatype')]
 
     dependencies {
         implementation dependentProjects
@@ -417,9 +264,9 @@ project(':jing-trang:validate') {
 }
 
 project(':jing-trang:xsd-datatype') {
-    ext.dependentProjects = [project(':jing-trang:util'),
-                             project(':jing-trang:datatype'),
-                             project(':jing-trang:regex')]
+    dependentProjects = [project(':jing-trang:util'),
+                         project(':jing-trang:datatype'),
+                         project(':jing-trang:regex')]
 
     dependencies {
         implementation dependentProjects

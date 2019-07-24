@@ -9,17 +9,59 @@ plugins {
 }
 
 allprojects {
+    apply plugin: 'java-library'
     apply plugin: 'eclipse'
     apply plugin: 'idea'
 
     repositories {
-        mavenCentral()
+        jcenter()
+    }
+
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+
+    ext {
+        dependencyVersions = [
+            icu4j: '58.2',
+            salvation: '2.6.0',
+            'commons-fileupload': '1.3.1',
+            log4j: '1.2.17',
+            log4j2: '2.12.0',
+            httpclient: '4.4.1',
+            jetty: '9.4.19.v20190610',
+
+            // Dependencies of subproject jint-trang
+            saxon: '9.1.0.8',
+            xalan: '2.7.2',
+            isorelax: '20041111',
+            isorelaxLib: "${project(':jing-trang').projectDir}/lib/isorelax.jar",
+
+            // Dependencies of the rng-parse module
+            javacc: '7.0.4',
+
+            // Dependencies of subproject htmlparser
+            jchardet: '1.0'
+        ]
+
+        projectVersions = [
+            validator: new SimpleDateFormat('yy.M.d').format(Calendar.getInstance().getTime()),
+            jing: '20190429VNU',
+            htmlparser: '1.4.13',
+            cssvalidator: '1.0.5',
+            galimatias: '0.1.3',
+            langdetect: '1.2'
+        ]
+
+        repositoryURL = [
+            snapshots: 'https://oss.sonatype.org/content/repositories/snapshots/',
+            staging: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+        ]
     }
 
     tasks.withType(JavaCompile) {
-        options.encoding = 'UTF-8'
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
+        options.encoding = 'UTF-8'
 
         options.debug 'debugLevel': 'source,lines,vars'
         options.warnings = false
@@ -37,46 +79,15 @@ subprojects {
     }
 
     tasks.withType(Jar) {
-        afterEvaluate { Project project ->
-            from project.sourceSets.main.output
-        }
+        from project.sourceSets.main.output
+
+        duplicatesStrategy = 'exclude'
     }
 }
 
-ext.dependencyVersions = [
-    icu4j: '58.2',
-    salvation: '2.6.0',
-    'commons-fileupload': '1.3.1',
-    log4j: '1.2.17',
-    log4j2: '2.12.0',
-    httpclient: '4.4.1',
-    jetty: '9.4.19.v20190610',
-
-    // Dependencies of subproject jing-trang
-    saxon: '9.1.0.8',
-    xalan: '2.7.2',
-    isorelax: '20041111',
-
-    // Dependencies of subproject htmlparser
-    jchardet: '1.0'
-]
-
-ext.subprojectVersions = [
-    validator: new SimpleDateFormat('yy.M.d').format(Calendar.getInstance().getTime()),
-    jing: '20190429VNU',
-    htmlparser: '1.4.13',
-    cssvalidator: '1.0.5',
-    galimatias: '0.1.3',
-    langdetect: '1.2'
-]
-
-ext.repositoryURL = [
-    'snapshots': 'https://oss.sonatype.org/content/repositories/snapshots/',
-    'staging': 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-]
-
 project(':') {
     apply plugin: 'java'
+    apply plugin: 'war'
 
     dependencies {
         implementation "com.ibm.icu:icu4j:${dependencyVersions.icu4j}"
@@ -84,8 +95,8 @@ project(':') {
         implementation "commons-fileupload:commons-fileupload:${dependencyVersions.'commons-fileupload'}"
         implementation "log4j:log4j:${dependencyVersions.log4j}"
         implementation "org.apache.httpcomponents:httpclient:${dependencyVersions.httpclient}"
-        implementation "org.eclipse.jetty.http2:http2-server:${dependencyVersions.jetty}"
-        implementation "org.eclipse.jetty:jetty-servlet:${dependencyVersions.jetty}"
+        providedCompile "org.eclipse.jetty.http2:http2-server:${dependencyVersions.jetty}"
+        providedCompile "org.eclipse.jetty:jetty-servlet:${dependencyVersions.jetty}"
 //    implementation "org.eclipse.jetty:jetty-servlets:${dependencyVersions.jetty}"
 
         implementation project(':css-validator'),
@@ -95,7 +106,7 @@ project(':') {
                        project(':galimatias'),
                        project(':htmlparser')
 
-        implementation "org.eclipse.jetty:jetty-util-ajax:${dependencyVersions.jetty}"
+        testImplementation "org.eclipse.jetty:jetty-util-ajax:${dependencyVersions.jetty}"
         // Use JUnit Jupiter API for testing.
 //    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'
 
@@ -108,12 +119,12 @@ project(':') {
     sourceSets {
         main {
             java {
-                srcDirs = ['src', 'test/java']
+                srcDir 'src'
                 exclude '**/nu/validator/xml/SaxCompiler.java'
             }
             resources {
                 srcDir 'resources'
-                include 'META-INF/', 'resources/nu/'
+                include 'nu/'
             }
 
             compileClasspath += project(':jing-trang:jing').configurations.compileClasspath
@@ -124,45 +135,51 @@ project(':') {
         }
     }
 
-    manifest {
-        attributes 'Implementation-Title': 'The Nu Markup Checker (v.Nu)'
-        attributes 'Implementation-Version': "${subprojectVersions.validator}"
-        attributes 'Implementation-Vendor': 'http://validator.github.io/validator/'
-    }
+    webAppDirName = 'webapp'
 
     wrapper.gradleVersion '5.5.1'
 
-    task copyLib(type: Sync) {
-        from configurations.runtimeClasspath
-        into "${distDir}/image/lib"
-    }
-
+    /* For Jar archive */
     tasks.withType(Jar) {
         archiveBaseName = 'vnu'
 
         manifest {
-            attributes 'Main-Class': 'nu.validator.client.SimpleCommandLineValidator'
-            from manifest
+            attributes 'Main-Class': 'nu.validator.client.SimpleCommandLineValidator',
+                       'Implementation-Title': 'The Nu Markup Checker (v.Nu)',
+                       'Implementation-Version': "${projectVersions.validator}",
+                       'Implementation-Vendor': 'http://validator.github.io/validator/'
         }
 
         metaInf {
-            from "${sourceSets.main.output.resourcesDir}/META-INF/services"
+            from 'src/META-INF/services'
             into 'services'
         }
+
+        duplicatesStrategy = 'exclude'
+
+        destinationDirectory.set file(distDir)
     }
 
     task list(dependsOn: configurations.compileClasspath) {
         doLast {
+            println sourceSets.main.output.join('\n')
+            println ''
+            // println project(':jing-trang:jing').dependentProjects.collect { it.sourceSets.main.output.resourcesDir }.join('\n')
+            println ''
 //            println sourceSets.main.compileClasspath.join('\n')
             println ''
-//            println "classpath = ${configurations.compileClasspath.join('\n')}"
-//            sourceSets.main.compileClasspath += project(':jing-trang:jing').configurations.compileClasspath
-//            println sourceSets.main.compileClasspath.join('\n')
-//            println sourceSets.main.output.join('\n')
-            println ''
-
 //            println configurations.runtimeClasspath.join('\n')
+            println ''
+            def a = (configurations.runtimeClasspath.asFileTree - configurations.compileClasspath.asFileTree)
+            println a.join('\n')
+
+            println compileJava.options.encoding
         }
+    }
+
+    task copyLib(type: Sync) {
+        from configurations.runtimeClasspath
+        into "${distDir}/image/lib"
     }
 
     task createJar(type: Jar, dependsOn: copyLib) {
@@ -179,18 +196,40 @@ project(':') {
 
     task fatJar(type: Jar) {
         // Copy dependencies into the jar archive
-        doLast {
-            from configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+        afterEvaluate {
+            from(configurations.runtimeClasspath.collect { it.file ? zipTree(it) : it }) {
+                exclude 'META-INF/maven', 'META-INF/services'
+            }
         }
+
+        from sourceSets.main.output
     }
 
-//    println configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }.join('\n')
+    /* For War archive */
+    tasks.withType(War) {
+        archiveBaseName = 'vnu'
 
-    //':jing-trang:jingTrangJar'
+        metaInf {
+            from 'src/META-INF/services'
+            into 'services'
+        }
+
+        webXml = file("webapp/WEB-INF/web.xml")
+
+        classpath sourceSets.main.output,
+                  project(':langdetect').sourceSets.main.output,
+                  project(':galimatias').sourceSets.main.output,
+                  project(':htmlparser').sourceSets.main.output
+
+        destinationDirectory.set file("${distDir}/war")
+    }
 }
 
 project(':css-validator') {
     description 'W3C CSS Validator'
+
+    sourceCompatibility = '1.7'
+    targetCompatibility = '1.7'
 
     sourceSets.main {
         java {
@@ -205,11 +244,6 @@ project(':css-validator') {
         }
     }
 
-    tasks.withType(JavaCompile) {
-        sourceCompatibility = '1.7'
-        targetCompatibility = '1.7'
-    }
-
     tasks.withType(Jar) {
         manifest {
             attributes 'Main-Class': 'org.w3c.css.css.CssValidator'
@@ -222,12 +256,6 @@ project(':css-validator') {
 project(':jing-trang') {
     apply from: "${rootProject.rootDir}/buildScript/jing-trang/build.gradle"
 }
-
-//task list(dependsOn: configurations.compileClasspath) {
-//    doLast {
-//        println "classpath = ${configurations.compileClasspath.collect { it }}"
-//    }
-//}
 
 project(':langdetect') {
     description = 'Fork of the com.cybozu.labs.langdetect language-detection library'
@@ -259,22 +287,22 @@ project(':htmlparser') {
 }
 
 /* Functions for building schema drivers */
-def SchemaDriverConfig = new ConfigSlurper().parse(file('buildScript/conf/properties.gradle').toURI().toURL()).SchemaDrivers
+def SchemaDriverConfig = new ConfigSlurper().parse(file('buildScript/conf/SchemaDrivers.gradle').toURI().toURL()).SchemaDrivers
 
 def schemaDrivers = [
     /* HTML schema drivers */
-    'HtmlCore'              : [
-        'sourceName': '',
-        'driverName': 'html5core.rnc',
-        'driver'    :
+    HtmlCore              : [
+        sourceName: '',
+        driverName: 'html5core.rnc',
+        driver    :
             SchemaDriverConfig.SchemaDriverToggle_HtmlCore
                 + SchemaDriverConfig.SchemaDriverBase
                 + SchemaDriverConfig.SchemaDriverMeta
     ],
-    'Html5NoMicrodata'      : [
-        'sourceName': '',
-        'driverName': 'html5full-no-microdata.rnc',
-        'driver'    :
+    Html5NoMicrodata      : [
+        sourceName: '',
+        driverName: 'html5full-no-microdata.rnc',
+        driver    :
             SchemaDriverConfig.SchemaDriverNamespace
                 + SchemaDriverConfig.SchemaDriverToggle_Html5
                 + SchemaDriverConfig.SchemaDriverBase
@@ -282,84 +310,84 @@ def schemaDrivers = [
                 + 'include "its20-html5.rnc"\n'
                 + 'common.attrs &= its-html-attributes\n'
     ],
-    'Html5'                 : [
-        'sourceName': 'html5full-no-microdata.rnc',
-        'driverName': 'html5full.rnc',
-        'driver'    : SchemaDriverConfig.SchemaDriverHtml5Microdata
+    Html5                 : [
+        sourceName: 'html5full-no-microdata.rnc',
+        driverName: 'html5full.rnc',
+        driver    : SchemaDriverConfig.SchemaDriverHtml5Microdata
     ],
-    'Html5RDFa'             : [
-        'sourceName': 'html5full.rnc',
-        'driverName': 'html5full-rdfa.rnc',
-        'driver'    : SchemaDriverConfig.SchemaDriverHtml5RDFa
+    Html5RDFa             : [
+        sourceName: 'html5full.rnc',
+        driverName: 'html5full-rdfa.rnc',
+        driver    : SchemaDriverConfig.SchemaDriverHtml5RDFa
     ],
-    'Html5RDFaLite'         : [
-        'sourceName': 'html5full.rnc',
-        'driverName': 'html5full-rdfalite.rnc',
-        'driver'    : SchemaDriverConfig.SchemaDriverHtml5RDFaLite
+    Html5RDFaLite         : [
+        sourceName: 'html5full.rnc',
+        driverName: 'html5full-rdfalite.rnc',
+        driver    : SchemaDriverConfig.SchemaDriverHtml5RDFaLite
     ],
 
     /* XHTML schema drivers */
-    'XhtmlCore'             : [
-        'sourceName': '',
-        'driverName': 'xhtml5core.rnc',
-        'driver'    :
+    XhtmlCore             : [
+        sourceName: '',
+        driverName: 'xhtml5core.rnc',
+        driver    :
             SchemaDriverConfig.SchemaDriverNamespace
                 + SchemaDriverConfig.SchemaDriverToggle_XhtmlCore
                 + SchemaDriverConfig.SchemaDriverBase
                 + SchemaDriverConfig.SchemaDriverMeta
     ],
-    'XhtmlCorePlusWf2'      : [
-        'sourceName': 'xhtml5core.rnc',
-        'driverName': 'xhtml5core-plus-web-forms2.rnc',
-        'driver'    : SchemaDriverConfig.SchemaDriverPlusWebForms2
+    XhtmlCorePlusWf2      : [
+        sourceName: 'xhtml5core.rnc',
+        driverName: 'xhtml5core-plus-web-forms2.rnc',
+        driver    : SchemaDriverConfig.SchemaDriverPlusWebForms2
     ],
-    'Xhtml5htmlNoMicrodata' : [
-        'sourceName': '',
-        'driverName': 'xhtml5full-html-no-microdata.rnc',
-        'driver'    :
+    Xhtml5htmlNoMicrodata : [
+        sourceName: '',
+        driverName: 'xhtml5full-html-no-microdata.rnc',
+        driver    :
             SchemaDriverConfig.SchemaDriverNamespace
                 + SchemaDriverConfig.SchemaDriverToggle_Xhtml5html
                 + SchemaDriverConfig.SchemaDriverBase
                 + SchemaDriverConfig.SchemaDriverHtml5NoMicrodata
     ],
-    'Xhtml5xhtmlNoMicrodata': [
-        'sourceName': '',
-        'driverName': 'xhtml5full-xhtml-no-microdata.rnc',
-        'driver'    :
+    Xhtml5xhtmlNoMicrodata: [
+        sourceName: '',
+        driverName: 'xhtml5full-xhtml-no-microdata.rnc',
+        driver    :
             SchemaDriverConfig.SchemaDriverNamespace
                 + SchemaDriverConfig.SchemaDriverToggle_Xhtml5xhtml
                 + SchemaDriverConfig.SchemaDriverBase
                 + SchemaDriverConfig.SchemaDriverHtml5NoMicrodata
     ],
-    'Xhtml5xhtml'           : [
-        'sourceName': 'xhtml5full-xhtml-no-microdata.rnc',
-        'driverName': 'xhtml5full-xhtml.rnc',
-        'driver'    : SchemaDriverConfig.SchemaDriverHtml5Microdata
+    Xhtml5xhtml           : [
+        sourceName: 'xhtml5full-xhtml-no-microdata.rnc',
+        driverName: 'xhtml5full-xhtml.rnc',
+        driver    : SchemaDriverConfig.SchemaDriverHtml5Microdata
     ],
-    'Xhtml5xhtmlRDFa'       : [
-        'sourceName': 'xhtml5full-xhtml.rnc',
-        'driverName': 'xhtml5full-xhtml-rdfa.rnc',
-        'driver'    : SchemaDriverConfig.SchemaDriverHtml5RDFa
+    Xhtml5xhtmlRDFa       : [
+        sourceName: 'xhtml5full-xhtml.rnc',
+        driverName: 'xhtml5full-xhtml-rdfa.rnc',
+        driver    : SchemaDriverConfig.SchemaDriverHtml5RDFa
     ],
-    'Xhtml5xhtmlRDFaLite'   : [
-        'sourceName': 'xhtml5full-xhtml.rnc',
-        'driverName': 'xhtml5full-xhtml-rdfalite.rnc',
-        'driver'    : SchemaDriverConfig.SchemaDriverHtml5RDFaLite
+    Xhtml5xhtmlRDFaLite   : [
+        sourceName: 'xhtml5full-xhtml.rnc',
+        driverName: 'xhtml5full-xhtml-rdfalite.rnc',
+        driver    : SchemaDriverConfig.SchemaDriverHtml5RDFaLite
     ],
-    'Xhtml5html'            : [
-        'sourceName': 'xhtml5full-html-no-microdata.rnc',
-        'driverName': 'xhtml5full-html.rnc',
-        'driver'    : SchemaDriverConfig.SchemaDriverHtml5Microdata
+    Xhtml5html            : [
+        sourceName: 'xhtml5full-html-no-microdata.rnc',
+        driverName: 'xhtml5full-html.rnc',
+        driver    : SchemaDriverConfig.SchemaDriverHtml5Microdata
     ],
-    'Xhtml5htmlRDFa'        : [
-        'sourceName': 'xhtml5full-html.rnc',
-        'driverName': 'xhtml5full-html-rdfa.rnc',
-        'driver'    : SchemaDriverConfig.SchemaDriverHtml5RDFa
+    Xhtml5htmlRDFa        : [
+        sourceName: 'xhtml5full-html.rnc',
+        driverName: 'xhtml5full-html-rdfa.rnc',
+        driver    : SchemaDriverConfig.SchemaDriverHtml5RDFa
     ],
-    'Xhtml5htmlRDFaLite'    : [
-        'sourceName': 'xhtml5full-html.rnc',
-        'driverName': 'xhtml5full-html-rdfalite.rnc',
-        'driver'    : SchemaDriverConfig.SchemaDriverHtml5RDFaLite
+    Xhtml5htmlRDFaLite    : [
+        sourceName: 'xhtml5full-html.rnc',
+        driverName: 'xhtml5full-html-rdfalite.rnc',
+        driver    : SchemaDriverConfig.SchemaDriverHtml5RDFaLite
     ]
 ]
 
@@ -383,7 +411,7 @@ File openDriver(schemaDir, driverName, sourceName = '') {
 
 /* end of data and functions for building schema drivers */
 
-def localentityFileDir = "${rootProject.sourceSets.main.output.resourcesDir}/nu/validator/localentities/files"
+def localEntityFileDir = "${rootProject.sourceSets.main.output.resourcesDir}/nu/validator/localentities/files"
 
 // No1
 task updateSubmodules(type: Exec) {
@@ -399,53 +427,55 @@ task downloadLocalEntities {
     doLast {
         delete 'local-entities'
 
-        file("${localentityFileDir}/html5spec") << new URL('https://html.spec.whatwg.org/').openStream()
+        file("${localEntityFileDir}/html5spec") << new URL('https://html.spec.whatwg.org/').openStream()
     }
 }
 
-// call in the prepareLocalEntityJar task
 task preparePropertiesFile(type: Copy) {
+    group = 'prepareLocalEntityJar'
+
     from 'resources/misc.properties'
-    into localentityFileDir
+    into localEntityFileDir
     expand([
-        version: subprojectVersions.validator
+        version: projectVersions.validator
     ])
 }
 
-// No9
-task prepareLocalEntityJar(dependsOn: preparePropertiesFile) {
+task copyLocalEntities(type: Sync) {
+    group = 'prepareLocalEntityJar'
+
+    from('README.md') {
+        rename { fileName -> 'cli-help' }
+    }
+    from('site') {
+        include('about.html', 'style.css', 'script.js', 'icon.png')
+    }
+    from('docs/Microsyntax-descriptions.md') {
+        rename { fileName -> 'syntax-descriptions' }
+    }
+    from('resources') {
+        include('existing-rel-values', 'language-profiles-list.txt', 'language-profiles/', 'log4j.properties')
+    }
+    from('resources/presets.txt') {
+        rename { fileName -> "${(fileName - '.txt')}" }
+    }
+    from('resources/alt_advice.html') {
+        rename { fileName -> 'vnu-alt-advice' }
+    }
+    from('resources/language-subtag-registry.txt') {
+        rename { fileName -> 'subtag-registry' }
+    }
+    into file(localEntityFileDir)
+}
+
+task updateEntitymap {
+    group = 'prepareLocalEntityJar'
+
+    mustRunAfter preparePropertiesFile
+
     doLast {
-        copy {
-            from('README.md') {
-                rename { fileName -> 'cli-help' }
-            }
-            from('site') {
-                include('about.html', 'style.css', 'script.js', 'icon.png')
-            }
-            from('docs/Microsyntax-descriptions.md') {
-                rename { fileName -> 'syntax-descriptions' }
-            }
-            from('resources') {
-                include('existing-rel-values', 'language-profiles-list.txt', 'log4j.properties')
-            }
-            from('resources/presets.txt') {
-                rename { fileName -> "${(fileName - '.txt')}" }
-            }
-            from('resources/alt_advice.html') {
-                rename { fileName -> 'vnu-alt-advice' }
-            }
-            from('resources/language-subtag-registry.txt') {
-                rename { fileName -> 'subtag-registry' }
-            }
-            into file(localentityFileDir)
-        }
+        def outFile = file("${localEntityFileDir}/entitymap")
 
-        rootProject.sync {
-            from 'resources/language-profiles'
-            into "${localentityFileDir}/language-profiles"
-        }
-
-        def outFile = file("${localentityFileDir}/entitymap")
         delete outFile
         file('resources/entity-map.txt').eachLine('UTF-8') {
             def values = it.strip().split('\t')   // [url, path]
@@ -455,87 +485,96 @@ task prepareLocalEntityJar(dependsOn: preparePropertiesFile) {
 
             if (new File(entPath).exists()) {
                 def safeName = path.replaceAll(/[^a-zA-Z0-9]/, '_')
-                def safePath = "${localentityFileDir}/${safeName}"
+                def safePath = "${localEntityFileDir}/${safeName}"
 
                 outFile.append("${values[0]}\t${safePath}\n", 'UTF-8')
                 new File(safePath) << new File(entPath)
             }
         }
-
-        delete fileTree(dir: 'schema', includes: SchemaDriverConfig.CoreSchemaDriverFiles),
-               fileTree(dir: 'schema/html5', includes: SchemaDriverConfig.HtmlSchemaDriverFiles),
-               'schema/xhtml10', 'schema/rdf'
     }
+}
+
+task deleteSchema(type: Delete) {
+    group = 'prepareLocalEntityJar'
+
+    mustRunAfter updateEntitymap
+
+    delete fileTree(dir: 'schema', includes: SchemaDriverConfig.CoreSchemaDriverFiles),
+           fileTree(dir: 'schema/html5', includes: SchemaDriverConfig.HtmlSchemaDriverFiles),
+           'schema/xhtml10', 'schema/rdf'
+}
+
+// No9
+task prepareLocalEntityJar {
+    dependsOn preparePropertiesFile, copyLocalEntities, updateEntitymap, deleteSchema
 }
 
 // No7
 task buildSchemaDrivers {
-    doLast {
-        def html5Dir = 'schema/html5'
+    def html5Dir = 'schema/html5'
+    ['HtmlCore', 'Html5NoMicrodata', 'Html5', 'Html5RDFa', 'Html5RDFaLite',
+     'XhtmlCore', 'XhtmlCorePlusWf2', 'Xhtml5htmlNoMicrodata',
+     'Xhtml5xhtmlNoMicrodata', 'Xhtml5html', 'Xhtml5xhtml', 'Xhtml5xhtmlRDFa',
+     'Xhtml5htmlRDFaLite', 'Xhtml5xhtmlRDFaLite'].each {
+        def driverName = schemaDrivers[it].driverName
+        def sourceName = schemaDrivers[it].sourceName
+        def driver = schemaDrivers[it].driver
 
-        ['HtmlCore', 'Html5NoMicrodata', 'Html5', 'Html5RDFa', 'Html5RDFaLite',
-         'XhtmlCore', 'XhtmlCorePlusWf2', 'Xhtml5htmlNoMicrodata',
-         'Xhtml5xhtmlNoMicrodata', 'Xhtml5html', 'Xhtml5xhtml', 'Xhtml5xhtmlRDFa',
-         'Xhtml5htmlRDFaLite', 'Xhtml5xhtmlRDFaLite'].each {
-            def driverName = schemaDrivers[it].driverName
-            def sourceName = schemaDrivers[it].sourceName
-            def driver = schemaDrivers[it].driver
+        openDriver(html5Dir, driverName, sourceName)
+            .withWriterAppend('UTF-8') { writer -> writer << driver }
+    }
 
-            openDriver(html5Dir, driverName, sourceName)
-                .withWriterAppend('UTF-8') { writer -> writer << driver }
-        }
+    def driversDir = 'schema/.drivers'
+    copy {
+        def drivers = SchemaDriverConfig.CoreSchemaDriverFiles + 'xhtml10'
 
-        def driversDir = 'schema/.drivers'
-        copy {
-            def drivers = SchemaDriverConfig.CoreSchemaDriverFiles + 'xhtml10'
-
+        doLast {
             println drivers.collect { fileName ->
                 "Copying ${driversDir}/${fileName} to schema/${fileName}"
             }.join('\n')
-
-            from(driversDir) {
-                include SchemaDriverConfig.CoreSchemaDriverFiles
-                include 'xhtml10/**'
-            }
-            into 'schema'
         }
 
-        copy {
+        from(driversDir) {
+            include SchemaDriverConfig.CoreSchemaDriverFiles
+            include 'xhtml10/'
+        }
+        into 'schema'
+    }
+
+    copy {
+        doLast {
             println "Copying ${driversDir}/rdf.rnc to schema/rdf/rdf.rnc"
-
-            from file("${driversDir}/rdf.rnc")
-            into 'schema/rdf'
         }
 
-        copy {
-            from files("${driversDir}/legacy.rnc", "its2/its20-html5.rnc", "its2/its20-html5-types.rnc")
-            into html5Dir
-        }
+        from file("${driversDir}/rdf.rnc")
+        into 'schema/rdf'
+    }
+
+    copy {
+        from files("${driversDir}/legacy.rnc", "its2/its20-html5.rnc", "its2/its20-html5-types.rnc")
+        into html5Dir
     }
 }
 
 def vnuSrc = 'src/nu/validator'
+task compileSaxCompiler(type: JavaCompile) {
+    source "${vnuSrc}/xml/SaxCompiler.java"
+    classpath = files(buildDir)
+    destinationDir = file("${buildDir}/emitter")
+}
 
 // No13
-task buildEmitters {
+task buildEmitters(dependsOn: compileSaxCompiler) {
     doLast {
-        def emitterClassDir = 'classes/emitter'
-
-        compileJava {
-            source "${vnuSrc}/xml/SaxCompiler.java"
-            classpath = files(projectDir)
-            destinationDir file("${emitterClassDir}")
-        }
-
         ['PageEmitter', 'FormEmitter'].each { emitter ->
             javaexec {
-                classpath = files('classes/emitter')
+                classpath = files("${buildDir}/emitter")
                 main = 'nu.validator.xml.SaxCompiler'
                 args "site/${emitter}.xml", "${vnuSrc}/servlet/${emitter}.java"
             }
         }
 
-        delete emitterClassDir
+        delete file("${buildDir}/emitter")
     }
 }
 
@@ -619,7 +658,7 @@ class Release {
 
         // No6
         // buildJing
-        tasks[':jing-trang:jing:classes'].mustRunAfter(':css-validator:jar')
+        tasks[':jing-trang:jing:classes']
 
         // No7
         buildSchemaDrivers()
@@ -647,7 +686,7 @@ class Release {
 task methodTest {
 //    dependsOn 'copyCoreSchemaDrivers', 'copyRDF'
 
-    dependsOn project(':jing-trang:jing').jar
+//    dependsOn project(':jing-trang:jing').jar
 
 }
 
