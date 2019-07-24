@@ -29,7 +29,6 @@ configure(allprojects.findAll { it.name != 'jing'}) {
 
 project(':jing-trang') {
     description 'Schema validation and conversion based on RELAX NG'
-    version = projectVersions.jing
 }
 
 project(':jing-trang:jing') {
@@ -219,7 +218,6 @@ project(':jing-trang:schematron') {
     dependencies {
         implementation dependentProjects
 
-//        implementation "xalan:xalan:${dependencyVersions.xalan}"
         implementation "net.sourceforge.saxon:saxon:${dependencyVersions.saxon}"
     }
 

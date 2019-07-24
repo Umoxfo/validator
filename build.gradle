@@ -18,8 +18,8 @@ allprojects {
         jcenter()
     }
 
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    project.sourceCompatibility = '1.8'
+    project.targetCompatibility = '1.8'
 
     ext {
         dependencyVersions = [
@@ -60,8 +60,6 @@ allprojects {
     }
 
     tasks.withType(JavaCompile) {
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
         options.encoding = 'UTF-8'
 
         options.debug 'debugLevel': 'source,lines,vars'
@@ -409,7 +407,6 @@ File openDriver(schemaDir, driverName, sourceName = '') {
 
     return file(driverPath)
 }
-
 /* end of data and functions for building schema drivers */
 
 def localEntityFileDir = "${rootProject.sourceSets.main.output.resourcesDir}/nu/validator/localentities/files"
