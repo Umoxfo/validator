@@ -507,9 +507,6 @@ task copyLocalEntities(type: Sync) {
     from('resources/alt_advice.html') {
         rename { fileName -> 'vnu-alt-advice' }
     }
-    from('resources/language-subtag-registry.txt') {
-        rename { fileName -> 'subtag-registry' }
-    }
     into file(localEntityFileDir)
 }
 
