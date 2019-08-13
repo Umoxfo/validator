@@ -501,9 +501,6 @@ task copyLocalEntities(type: Sync) {
     from('resources') {
         include('existing-rel-values')
     }
-    from('resources/presets.txt') {
-        rename { fileName -> "${(fileName - '.txt')}" }
-    }
     from('resources/alt_advice.html') {
         rename { fileName -> 'vnu-alt-advice' }
     }
