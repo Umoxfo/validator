@@ -499,7 +499,7 @@ task copyLocalEntities(type: Sync) {
         rename { fileName -> 'syntax-descriptions' }
     }
     from('resources') {
-        include('existing-rel-values', 'log4j.properties')
+        include('existing-rel-values')
     }
     from('resources/presets.txt') {
         rename { fileName -> "${(fileName - '.txt')}" }
