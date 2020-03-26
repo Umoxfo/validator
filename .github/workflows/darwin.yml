@@ -1,0 +1,132 @@
+name: OSX build for vnu
+
+on:
+  push:
+    branches: [ actions ]
+  pull_request:
+    branches: [ actions ]
+
+env:
+  TAG: osx
+
+jobs:
+  osx:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [11]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        repository: validator/validator
+        submodules: recursive
+    - name: Setup Java JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: ${{ matrix.java }}
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+    - name: Cache dependencies
+      uses: actions/cache@v1
+      with:
+        path: ./dependencies
+        key: build-dependencies-${{ hashFiles('build/build.py') }}
+        restore-keys: build-dependencies-
+    - name: Cache extras
+      uses: actions/cache@v1
+      with:
+        path: ./extras
+        key: build-extras-${{ hashFiles('build/build.py') }}
+        restore-keys: build-extras-
+    - name: Install Dependencies
+      run: python ./checker.py dldeps
+    - name: Build
+      run: python ./checker.py build
+
+    - name: Create Jar package
+      run: python ./checker.py jar
+    - name: Create War package
+      run: python ./checker.py war
+    - name: Create a binary runtime image package
+      run: python ./checker.py image
+
+    - name: Test Jar package
+      run: |
+        java -jar ./build/dist/vnu.jar ./build/dist/index.html
+        java -jar ./build/dist/vnu.jar ./site/nu-about.html
+
+    - name: Test suites
+      run: |
+        python ./checker.py check
+        python ./checker.py test
+
+    - run: |
+        gpg --import <(echo "${{ secrets.GPG_GITHUB_ACTIONS }}") || true
+        for file in build/dist/vnu.${{ env.TAG }}*; do gpg --yes -ab -u 0xFB107FB740AAC813 -s $file; done || true
+
+        mkdir -p ./build/dist-image
+        mv ./build/dist/vnu.${{ env.TAG }}* ./build/dist-image
+    # It will be changed in the future.
+    # - name: Before Deploy
+    #   if: matrix.java == 11 && success()
+    #   run: |
+    #     gpg --import <(echo "${{ secrets.GPG_GITHUB_ACTIONS }}") || true
+    #     git config --local user.name "GitHub Actions"
+    #     git config --local user.email "mike@w3.org"
+    #     git remote set-url origin https://${{github.repository.owner.login}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.git
+    #     git tag -m "${{ github.event.head_commit.message }}" -f ${{ env.TAG }} -s --local-user=0xFB107FB740AAC813
+    #     git push origin ${{ env.TAG }} --force
+
+    - name: Upload runtime image artifact
+      if: matrix.java == 11 && success()
+      uses: actions/upload-artifact@v1
+      with:
+        name: dist-image
+        path: build/dist-image
+
+  before_deploy:
+    needs: osx
+    runs-on: macos-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: actions
+
+    - name: Before Deploy
+      run: |
+        gpg --import <(echo "${{ secrets.GPG_GITHUB_ACTIONS }}") || true
+        git config --local user.name "GitHub Actions"
+        git config --local user.email "mike@w3.org"
+        git remote set-url origin https://${{github.repository.owner.login}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.git
+        git tag -m "${{ github.event.head_commit.message }}" -f ${{ env.TAG }} -s --local-user=0xFB107FB740AAC813
+        git push origin ${{ env.TAG }} --force
+
+  image:
+    needs: before_deploy
+    runs-on: macos-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: actions
+
+    - name: Download runtime image artifact
+      uses: actions/download-artifact@v1
+      with:
+        name: dist-image
+        path: build/dist-image
+
+    - name: Update the image Release
+      uses: ./.github/actions/upload-release-asset
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        tag_name: ${{ env.TAG }}
+        prerelease: true
+        file: ./build/dist-image/*
+        overwrite: true

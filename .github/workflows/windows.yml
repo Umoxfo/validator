@@ -1,0 +1,157 @@
+name: Windows build for vnu
+
+on:
+  push:
+    branches: [ actions ]
+  pull_request:
+    branches: [ actions ]
+
+env:
+  TAG: windows
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [8, 11, 13, 14, 15-ea]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        repository: validator/validator
+        submodules: recursive
+    - name: Setup Java JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: ${{ matrix.java }}
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+    - name: Cache dependencies
+      uses: actions/cache@v1
+      with:
+        path: ./dependencies
+        key: build-dependencies-${{ hashFiles('build/build.py') }}
+        restore-keys: build-dependencies-
+    - name: Cache extras
+      uses: actions/cache@v1
+      with:
+        path: ./extras
+        key: build-extras-${{ hashFiles('build/build.py') }}
+        restore-keys: build-extras-
+    - name: Install Dependencies
+      run: python ./checker.py dldeps
+    - name: Build
+      run: python ./checker.py build
+
+    - name: Create Jar package
+      run: python ./checker.py jar
+    - name: Create War package
+      run: python ./checker.py war
+    - name: Create a binary runtime image package
+      run: python ./checker.py image
+
+    - name: Test Jar package
+      run: |
+        java -jar ./build/dist/vnu.jar ./build/dist/index.html
+        java -jar ./build/dist/vnu.jar ./site/nu-about.html
+
+    - name: Test suites
+      run: |
+        python ./checker.py check
+        python ./checker.py test
+
+    - if: matrix.java == 11 && success()
+      run: |
+        choco install gnupg -y
+        $env:Path = "$([System.Environment]::GetEnvironmentVariable("Path","Machine"));$([System.Environment]::GetEnvironmentVariable("Path","User"))"
+        "${{ secrets.GPG_GITHUB_ACTIONS }}" > tmp; & "C:\Program Files (x86)\gnupg\bin\gpg.exe" --import tmp; Remove-Item tmp
+        foreach ($file in $(Resolve-Path build/dist/vnu.windows* -Relative)) {
+          & "C:\Program Files (x86)\gnupg\bin\gpg.exe" --yes -ab -u 0xFB107FB740AAC813 -s $file
+        }
+
+        New-Item ./build/dist-image -ItemType Directory
+        Move-Item ./build/dist/vnu.windows* ./build/dist-image
+    # It will be changed in the future.
+    # - name: Install GnuPG
+    #   if: matrix.java == 11 && success()
+    #   run: |
+    #     choco install gnupg
+    #     $env:Path = "$([System.Environment]::GetEnvironmentVariable("Path","Machine"));$([System.Environment]::GetEnvironmentVariable("Path","User"))"
+    #     "${{ secrets.GPG_GITHUB_ACTIONS }}" > tmp; & "C:\Program Files (x86)\gnupg\bin\gpg.exe" --import tmp; Remove-Item tmp
+
+    # - name: Git configuration
+    #   if: matrix.java == 11 && success()
+    #   run: |
+    #     git config --local gpg.program "C:\Program Files (x86)\gnupg\bin\gpg.exe"
+    #     git config --local user.name "GitHub Actions"
+    #     git config --local user.email "mike@w3.org"
+    #     git remote set-url origin https://${{github.repository.owner.login}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.git
+
+    # - name: Update ${{ env.TAG }} tag
+    #   if: matrix.java == 11 && success()
+    #   run: |
+    #     git tag -m "${{ github.event.head_commit.message }}" -f ${{ env.TAG }} -s --local-user=0xFB107FB740AAC813
+    #     git push origin ${{ env.TAG }} --force
+
+    - name: Upload runtime image artifact
+      if: matrix.java == 11 && success()
+      uses: actions/upload-artifact@v1
+      with:
+        name: dist-image
+        path: build/dist-image
+
+  before_deploy:
+    needs: windows
+    runs-on: windows-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: actions
+
+    - name: Install GnuPG
+      run: |
+        choco install gnupg
+        $env:Path = "$([System.Environment]::GetEnvironmentVariable("Path","Machine"));$([System.Environment]::GetEnvironmentVariable("Path","User"))"
+        "${{ secrets.GPG_GITHUB_ACTIONS }}" > tmp; & "C:\Program Files (x86)\gnupg\bin\gpg.exe" --import tmp; Remove-Item tmp
+
+    - name: Git configuration
+      run: |
+        git config --local gpg.program "C:\Program Files (x86)\gnupg\bin\gpg.exe"
+        git config --local user.name "GitHub Actions"
+        git config --local user.email "mike@w3.org"
+        git remote set-url origin https://${{github.repository.owner.login}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.git
+
+    - name: Update ${{ env.TAG }} tag
+      run: |
+        git tag -m "${{ github.event.head_commit.message }}" -f ${{ env.TAG }} -s --local-user=0xFB107FB740AAC813
+        git push origin ${{ env.TAG }} --force
+
+  image:
+    needs: before_deploy
+    runs-on: windows-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: actions
+
+    - name: Download runtime image artifact
+      uses: actions/download-artifact@v1
+      with:
+        name: dist-image
+        path: build/dist-image
+
+    - name: Update the image Release
+      uses: ./.github/actions/upload-release-asset
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        tag_name: ${{ env.TAG }}
+        prerelease: true
+        file: ./build/dist-image/*
+        overwrite: true

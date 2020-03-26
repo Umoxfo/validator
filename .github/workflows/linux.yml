@@ -8,12 +8,24 @@ on:
 
 jobs:
   linux:
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-#         java: [8, 11, 13, 14, 15-ea]
-        java: [11]
-    runs-on: ubuntu-latest
+        java: [8, 11, 13, 14, 15-ea]
+    services:
+      jetty:
+        image: jetty:9-jre11-slim
+        ports:
+          - 8080:8080
+        volumes:
+          - ~/build/dist-war:/var/lib/jetty/webapps
+      # tomcat:
+      #   image: tomcat:9-jdk11-openjdk-slim
+      #   ports:
+      #     - 8888:8080
+      #   volumes:
+      #     - ~/build/dist-war:/usr/local/tomcat/webapps
 
     steps:
     - name: Checkout
@@ -63,9 +75,6 @@ jobs:
         java -jar ./build/dist/vnu.jar ./build/dist/index.html
         java -jar ./build/dist/vnu.jar ./site/nu-about.html
 
-    - name: Setup Jetty
-      run: docker run -d -v ~/build/dist-war:/var/lib/jetty/webapps -p 8080:8080 jetty:9-jre11-slim
-
     - name: Test War package
       run: |
         jar xf ./build/dist-war/vnu.war && file WEB-INF/classes/nu/validator/servlet/VerifierServlet.class | grep "version 52.0"
@@ -79,10 +88,10 @@ jobs:
         python ./checker.py check
         python ./checker.py test
 
-    - run: |
+    - if: matrix.java == 11 && success()
+      run: |
         gpg --import <(echo "${{ secrets.GPG_GITHUB_ACTIONS }}") || true
-        for file in build/dist/vnu.{jar*,linux*}; do gpg --yes -ab -u 0xFB107FB740AAC813 -s $file; done || true
-        for file in build/dist-war/vnu.war*; do gpg --yes -ab -u 0xFB107FB740AAC813 -s $file; done || true
+        for file in build/dist/vnu.{jar,linux}* build/dist-war/vnu.war*; do gpg --yes -ab -u 0xFB107FB740AAC813 -s $file; done || true
 
         mkdir -p ./build/dist-jar
         mv ./build/dist/vnu.jar* ./build/dist-jar
@@ -139,10 +148,7 @@ jobs:
         git config --local user.name "GitHub Actions"
         git config --local user.email "mike@w3.org"
         git remote set-url origin https://${{github.repository.owner.login}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.git
-        for tag in jar war linux
-        do
-          git tag -m "${{ github.event.head_commit.message }}" -f ${tag} -s --local-user=0xFB107FB740AAC813
-        done
+        for tag in jar war linux; do git tag -m "${{ github.event.head_commit.message }}" -f ${tag} -s -u 0xFB107FB740AAC813; done
         git push origin --tags --force
 
   jar:
