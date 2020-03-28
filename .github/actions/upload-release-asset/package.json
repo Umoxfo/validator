@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",
-    "@types/node": "^12.12.31",
+    "@types/node": "^12.12.32",
     "typescript": "^3.8.3"
   }
 }
