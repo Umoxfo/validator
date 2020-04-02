@@ -11,7 +11,7 @@ LABEL version="dev"
 LABEL maintainer="Michael[tm] Smith <mike@w3.org>"
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 RUN apk add --no-cache --virtual .checksum curl gnupg unzip && \
-    runtime_image_url=https://github.com/validator/validator/releases/download/linux/vnu.linux.zip
+    runtime_image_url=https://github.com/validator/validator/releases/download/linux/vnu.linux.zip && \
     curl -OOOOL $runtime_image_url{,.asc,.sha1,.sha1.asc} && \
     for keyserver in ha.pool.sks-keyservers.net \
                      pgp.mit.edu \
