@@ -96,10 +96,6 @@ jobs:
         gpg --import <(echo "${{ secrets.GPG_GITHUB_ACTIONS }}") || true
         for file in build/dist/vnu.{jar,linux}* build/dist-war/vnu.war*; do gpg --yes -ab -u 0xFB107FB740AAC813 -s $file; done || true
 
-        mkdir -p ./build/dist-jar
-        mv ./build/dist/vnu.jar* ./build/dist-jar
-        mkdir -p ./build/dist-image
-        mv ./build/dist/vnu.linux* ./build/dist-image
     # It will be changed in the future.
     # - name: Before Deploy
     #   if: matrix.java == 11 && success()
@@ -119,8 +115,8 @@ jobs:
       if: matrix.java == 11 && success()
       uses: actions/upload-artifact@v1
       with:
-        name: dist-jar
-        path: build/dist-jar
+        name: dist
+        path: build/dist
 
     - name: Upload War artifact
       if: matrix.java == 11 && success()
@@ -129,12 +125,12 @@ jobs:
         name: dist-war
         path: build/dist-war
 
-    - name: Upload runtime image artifact
-      if: matrix.java == 11 && success()
-      uses: actions/upload-artifact@v1
-      with:
-        name: dist-image
-        path: build/dist-image
+    # - name: Upload runtime image artifact
+    #   if: matrix.java == 11 && success()
+    #   uses: actions/upload-artifact@v1
+    #   with:
+    #     name: dist-image
+    #     path: build/dist-image
 
   before_deploy:
     needs: linux
@@ -151,10 +147,11 @@ jobs:
         git config --local user.name "GitHub Actions"
         git config --local user.email "mike@w3.org"
         git remote set-url origin https://${{github.repository.owner.login}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.git
-        for tag in jar war linux; do git tag -m "${{ github.event.head_commit.message }}" -f ${tag} -s -u 0xFB107FB740AAC813; done
+        for tag in jar war linux; do git tag -m "${{ github.event.head_commit.message }}" -f development -s -u 0xFB107FB740AAC813; done
+        # for tag in jar war linux; do git tag -m "${{ github.event.head_commit.message }}" -f ${tag} -s -u 0xFB107FB740AAC813; done
         git push origin --tags --force
 
-  jar:
+  release:
     needs: before_deploy
     runs-on: ubuntu-latest
     steps:
@@ -163,68 +160,97 @@ jobs:
       with:
         ref: actions
 
-    - name: Download Jar artifact
+    - name: Download artifacts
       uses: actions/download-artifact@v1
       with:
-        name: dist-jar
-        path: build/dist-jar
-
-    - name: Update the Jar Release
-      uses: ./.github/actions/upload-release-asset
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        tag_name: jar
-        prerelease: true
-        file: ./build/dist-jar/*
-        overwrite: true
-
-  war:
-    needs: before_deploy
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        ref: actions
-
+        name: dist
+        path: build/dist
     - name: Download War artifact
       uses: actions/download-artifact@v1
       with:
         name: dist-war
-        path: build/dist-war
+        path: build/dist
 
-    - name: Update the War Release
+    - name: Update Release
       uses: ./.github/actions/upload-release-asset
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        tag_name: war
+        tag_name: development
         prerelease: true
-        file: ./build/dist-war/vnu.war*
+        file: ./build/dist/{vnu.jar*,vnu.linux*,vnu.war*}
         overwrite: true
 
-  image:
-    needs: before_deploy
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        ref: actions
+  # jar:
+  #   needs: before_deploy
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v2
+  #     with:
+  #       ref: actions
 
-    - name: Download runtime image artifact
-      uses: actions/download-artifact@v1
-      with:
-        name: dist-image
-        path: build/dist-image
+  #   - name: Download Jar artifact
+  #     uses: actions/download-artifact@v1
+  #     with:
+  #       name: dist-jar
+  #       path: build/dist-jar
 
-    - name: Update the image Release
-      uses: ./.github/actions/upload-release-asset
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        tag_name: linux
-        prerelease: true
-        file: ./build/dist-image/*
-        overwrite: true
+  #   - name: Update the Jar Release
+  #     uses: ./.github/actions/upload-release-asset
+  #     with:
+  #       github_token: ${{ secrets.GITHUB_TOKEN }}
+  #       tag_name: jar
+  #       prerelease: true
+  #       file: ./build/dist-jar/*
+  #       overwrite: true
+
+  # war:
+  #   needs: before_deploy
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v2
+  #     with:
+  #       ref: actions
+
+  #   - name: Download War artifact
+  #     uses: actions/download-artifact@v1
+  #     with:
+  #       name: dist-war
+  #       path: build/dist-war
+
+  #   - name: Update the War Release
+  #     uses: ./.github/actions/upload-release-asset
+  #     with:
+  #       github_token: ${{ secrets.GITHUB_TOKEN }}
+  #       tag_name: war
+  #       prerelease: true
+  #       file: ./build/dist-war/vnu.war*
+  #       overwrite: true
+
+  # image:
+  #   needs: before_deploy
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v2
+  #     with:
+  #       ref: actions
+
+  #   - name: Download runtime image artifact
+  #     uses: actions/download-artifact@v1
+  #     with:
+  #       name: dist-image
+  #       path: build/dist-image
+
+  #   - name: Update the image Release
+  #     uses: ./.github/actions/upload-release-asset
+  #     with:
+  #       github_token: ${{ secrets.GITHUB_TOKEN }}
+  #       tag_name: linux
+  #       prerelease: true
+  #       file: ./build/dist-image/*
+  #       overwrite: true
 
   docker:
     runs-on: ubuntu-latest
