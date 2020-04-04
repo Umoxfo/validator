@@ -146,7 +146,7 @@ jobs:
         git config --local user.name "GitHub Actions"
         git config --local user.email "mike@w3.org"
         git remote set-url origin https://${{github.repository.owner.login}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.git
-        for tag in jar war linux; do git tag -m "${{ github.event.head_commit.message }}" -f development -s -u 0xFB107FB740AAC813; done
+        git tag -m "${{ github.event.head_commit.message }}" -f development -s -u 0xFB107FB740AAC813
         # for tag in jar war linux; do git tag -m "${{ github.event.head_commit.message }}" -f ${tag} -s -u 0xFB107FB740AAC813; done
         git push origin --tags --force
 

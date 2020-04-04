@@ -69,8 +69,6 @@ jobs:
         gpg --import <(echo "${{ secrets.GPG_GITHUB_ACTIONS }}") || true
         for file in build/dist/vnu.${{ env.TAG }}*; do gpg --yes -ab -u 0xFB107FB740AAC813 -s $file; done || true
 
-        mkdir -p ./build/dist-image
-        mv ./build/dist/vnu.${{ env.TAG }}* ./build/dist-image
     # It will be changed in the future.
     # - name: Before Deploy
     #   if: matrix.java == 11 && success()
@@ -86,8 +84,8 @@ jobs:
       if: matrix.java == 11 && success()
       uses: actions/upload-artifact@v1
       with:
-        name: dist-image
-        path: build/dist-image
+        name: dist
+        path: build/dist
 
   before_deploy:
     needs: osx
@@ -119,14 +117,14 @@ jobs:
     - name: Download runtime image artifact
       uses: actions/download-artifact@v1
       with:
-        name: dist-image
-        path: build/dist-image
+        name: dist
+        path: build/dist
 
     - name: Update the image Release
       uses: ./.github/actions/upload-release-asset
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        tag_name: ${{ env.TAG }}
+        tag_name: development
         prerelease: true
-        file: ./build/dist-image/*
+        file: ./build/dist/vnu.${{ env.TAG }}*
         overwrite: true
