@@ -26,7 +26,7 @@ RUN apk add --no-cache --virtual .checksum curl gnupg unzip && \
     echo "$(cat vnu.linux.zip.sha1)  vnu.linux.zip" | sha1sum -c - && \
     unzip ./vnu.linux.zip && \
     rm ./vnu.linux.zip* && \
-    apk del --purge -r unzip
+    apk del --purge -r .checksum
 ENV LANG C.UTF-8
 ENV JAVA_TOOL_OPTIONS ""
 ENV CONNECTION_TIMEOUT_SECONDS 5
