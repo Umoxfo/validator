@@ -160,13 +160,8 @@ jobs:
     - name: Download artifacts
       uses: actions/download-artifact@v2
       with:
-        name: dist
-        path: build/dist
-    - name: Download War artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: dist-war
-        path: build/dist
+        path: build
+    - run: mv build/dist-war/* build/dist
 
     - name: Update Release
       uses: ./.github/actions/upload-release-asset
