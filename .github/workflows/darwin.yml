@@ -82,10 +82,10 @@ jobs:
 
     - name: Upload runtime image artifact
       if: matrix.java == 11 && success()
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
         name: dist
-        path: build/dist
+        path: build/dist/vnu.${{ env.TAG }}*
 
   before_deploy:
     needs: osx
@@ -115,7 +115,7 @@ jobs:
         ref: actions
 
     - name: Download runtime image artifact
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v2
       with:
         name: dist
         path: build/dist
@@ -124,7 +124,7 @@ jobs:
       uses: ./.github/actions/upload-release-asset
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        tag_name: development
+        tag_name: ${{ env.TAG }}
         prerelease: true
         file: ./build/dist/vnu.${{ env.TAG }}*
         overwrite: true

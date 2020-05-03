@@ -3,8 +3,6 @@ name: Linux build for vnu
 on:
   push:
     branches: [ actions ]
-  pull_request:
-    branches: [ actions ]
 
 jobs:
   linux:
@@ -112,14 +110,14 @@ jobs:
 
     - name: Upload Jar artifact
       if: matrix.java == 11 && success()
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
         name: dist
         path: build/dist
 
     - name: Upload War artifact
       if: matrix.java == 11 && success()
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
         name: dist-war
         path: build/dist-war
@@ -160,12 +158,12 @@ jobs:
         ref: actions
 
     - name: Download artifacts
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v2
       with:
         name: dist
         path: build/dist
     - name: Download War artifact
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v2
       with:
         name: dist-war
         path: build/dist
