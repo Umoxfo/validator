@@ -145,8 +145,6 @@ jobs:
         name: dist
         path: build/dist
 
-    - run: ls ./build/dist
-
     - name: Update the image Release
       uses: ./.github/actions/upload-release-asset
       with:
